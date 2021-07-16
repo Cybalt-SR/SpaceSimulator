@@ -24,7 +24,7 @@ namespace SpaceSimulation
     {
         public ForceInfo forceInfo = new ForceInfo();
 
-        //Trajectory alculation
+        //Trajectory calculation
         //cache
         int caclulationSecond = 0;
 
