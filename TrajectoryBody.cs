@@ -25,7 +25,7 @@ namespace SpaceSimulation
         //used for the calculation of force and for variables here to retain throughout calculation
         public TrajectoryData t_data = new TrajectoryData();
 
-        //Trajectory alculation
+        //Trajectory calculation
         //cache
         int caclulationSecond = 0;
 
