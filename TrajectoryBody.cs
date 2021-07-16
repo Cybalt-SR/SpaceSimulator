@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SpaceSimulation
 {
     [Serializable]
-    public class ForceInfo
+    public class TrajectoryData
     {
         /// <summary>
         /// The only editable value, is the starting value.
@@ -22,7 +22,8 @@ namespace SpaceSimulation
 
     public class TrajectoryBody : SimulatedBody
     {
-        public ForceInfo forceInfo = new ForceInfo();
+        //used for the calculation of force and for variables here to retain throughout calculation
+        public TrajectoryData t_data = new TrajectoryData();
 
         //Trajectory alculation
         //cache
@@ -34,22 +35,22 @@ namespace SpaceSimulation
 
             trajectory = new List<Double2>();
 
-            forceInfo.lastDir = up;
-            forceInfo.lastPos = position;
-            forceInfo.lastForce = up * (forceInfo.startingSpeed * forceInfo.mass);
+            t_data.lastDir = up;
+            t_data.lastPos = position;
+            t_data.lastForce = up * (t_data.startingSpeed * t_data.mass);
         }
 
         public void CalculateNext(SimulatedBody[] otherObjects)
         {
             if (caclulationSecond % pathResolution == 0)
-                trajectory.Add(forceInfo.lastPos);
+                trajectory.Add(t_data.lastPos);
 
             var newForce = Double2.zero;
-            newForce += GetGravity(forceInfo.mass, forceInfo.lastPos, otherObjects);
+            newForce += GetGravity(t_data.mass, t_data.lastPos, otherObjects);
 
-            forceInfo.lastForce = newForce;
-            forceInfo.currentVelocity = forceInfo.lastForce / forceInfo.mass;
-            forceInfo.lastPos += forceInfo.currentVelocity / SpaceSimulation.scale;
+            t_data.lastForce = newForce;
+            t_data.currentVelocity = t_data.lastForce / t_data.mass;
+            t_data.lastPos += t_data.currentVelocity / SpaceSimulation.scale;
 
             caclulationSecond++;
         }
@@ -67,15 +68,36 @@ namespace SpaceSimulation
 
                 double sqrdist = Math.Pow(RealDist(pos, bodyPos), 2);
                 //Gravity equation
-                double rawForce = SpaceSimulation.gconst * (forceInfo.mass * mass / sqrdist);
+                double rawForce = SpaceSimulation.gconst * (t_data.mass * mass / sqrdist);
 
                 Double2 dir = bodyPos - pos;
-                force += dir.nomalized * rawForce;
+                force += dir.normalized * rawForce;
             }
 
             return force;
         }
 
+        Double2 GetThrust(double mass, Double2 pos, CelestialBody gravityHolder)
+        {
+            // get gravity of body, if earth then this should return 9.81m/s^2            
+            double grav = GetRawForce(pos, gravityHolder);
+
+            // get total acceleration of craft.
+            double accel = (SpaceSimulation.exhaustVelo / mass) * SpaceSimulation.fuelBurnRate - grav;
+
+            Double2 dir = (gravityHolder.unscaledPos - pos) * -1; // going against the earth
+            return dir.normalized * accel;
+        }
+
+        double GetRawForce(Double2 pos, CelestialBody body)
+        {
+            // this method returns the raw force of the planet on the body
+            // universal gravity equation = gconst * (m1 * m2 / sqrdist)
+
+            double sqrdist = Math.Pow(RealDist(pos, body.unscaledPos), 2);
+            double rawForce = SpaceSimulation.gconst * (body.mass * t_data.mass / sqrdist);
+            return rawForce;
+        }
         #endregion
     }
 }

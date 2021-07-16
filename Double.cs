@@ -28,7 +28,7 @@ namespace SpaceSimulation
                 return Math.Sqrt((x * x) + (y * y));
             }
         }
-        public Double2 nomalized
+        public Double2 normalized
         {
             get
             {
