@@ -21,6 +21,13 @@ namespace SpaceSimulation
         public static Double2 operator *(Double2 a, double b) => new Double2(a.x * b, a.y * b);
         public static Double2 operator /(Double2 a, double b) => new Double2(a.x / b, a.y / b);
 
+        public double sqrmagnitude
+        {
+            get
+            {
+                return (x * x) + (y * y);
+            }
+        }
         public double magnitude
         {
             get
@@ -36,6 +43,15 @@ namespace SpaceSimulation
 
                 return new Double2(x, y) / mag;
             }
+        }
+        public static Double2 Lerp(Double2 a , Double2 b, double t)
+        {
+            var value = a + ((b - a) / t);
+
+            if (t == 0D)
+                return a;
+            else
+                return value;
         }
 
         public override string ToString()
