@@ -6,20 +6,14 @@ namespace SpaceSimulation
     [Serializable]
     public class SimulatedBody
     {
-        public Double2 unscaledPos;
         public List<Double2> trajectory;
         
         protected int pathResolution => SpaceSimulation.pathResolution;
 
         #region utils
-        public double RealDist(Double2 pos1, Double2 pos2)
+        public Double2 GetPositionAtTime(int timeSecond)
         {
-            return (pos1 - pos2).magnitude * SpaceSimulation.scale;
-        }
-
-        public Double2 GetUnscaledPositionAtTime(int timeSecond)
-        {
-            int index = timeSecond / pathResolution;
+            int index = (timeSecond / pathResolution) % trajectory.Count;
             return trajectory[index];
         }
         #endregion
