@@ -19,6 +19,16 @@ namespace SpaceSimulation
 
     public class TrajectoryBody : SimulatedBody
     {
+        public List<Double2> trajectory;
+
+        #region utils
+        public Double2 GetPositionAtTime(int timeSecond)
+        {
+            int index = (timeSecond / pathResolution) % trajectory.Count;
+            return trajectory[index];
+        }
+        #endregion
+
         //used for the calculation of force and for variables here to retain throughout calculation
         public TrajectoryData t_data = new TrajectoryData();
 

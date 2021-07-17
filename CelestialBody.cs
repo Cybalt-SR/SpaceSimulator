@@ -9,6 +9,7 @@ namespace SpaceSimulation
     [Serializable]
     public class CelestialBody : TrajectoryBody
     {
+        public double radius = 0;
         public double eccentricity = 0;
         public double inclination = 0;
         public double Longitude_ascendingNode = 0;
