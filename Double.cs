@@ -46,12 +46,8 @@ namespace SpaceSimulation
         }
         public static Double2 Lerp(Double2 a , Double2 b, double t)
         {
-            var value = a + ((b - a) / t);
-
-            if (t == 0D)
-                return a;
-            else
-                return value;
+            var value = new Double2(Double.Lerp(a.x, b.x, t), Double.Lerp(a.y, b.y, t));
+            return value;
         }
 
         public override string ToString()
@@ -64,7 +60,7 @@ namespace SpaceSimulation
     {
         public static double Lerp(double a, double b, double t)
         {
-            var value = a + ((b - a) / t);
+            var value = a + ((b - a) * t);
 
             if (double.IsNaN(value))
                 return a;

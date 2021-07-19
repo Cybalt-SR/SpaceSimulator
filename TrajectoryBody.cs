@@ -19,32 +19,52 @@ namespace SpaceSimulation
         public List<TrajectoryData> trajectory;
 
         #region utils
-        Double2 GetLerpedValue(List<Double2> values, int time, int timeResolution)
+        public double GetInterpolatedT(int time, out int index, out int indexnext, bool clamped = false)
         {
-            var normalValue = ((double)time / timeResolution) % values.Count;
+            double accurateindex = ((double)time / pathResolution);
+            bool withinClamp = accurateindex < trajectory.Count - 1 && accurateindex > 0;
 
-            int valueBeforeIndex = (int)Math.Floor(normalValue);
-            Double2 a = values[valueBeforeIndex];
-            Double2 b = values[valueBeforeIndex + 1];
+            if (clamped == false || withinClamp == true)
+            {
+                accurateindex %= trajectory.Count;
+                index = (int)Math.Floor(accurateindex);
+                indexnext = (index + 1) % trajectory.Count;
 
-            double t = normalValue - valueBeforeIndex;
+                double t = accurateindex - index;
+                return t;
+            }
+            else
+            {
+                if(accurateindex > trajectory.Count - 1)
+                {
+                    index = trajectory.Count - 1;
+                    indexnext = trajectory.Count - 1;
+                    return 1;
+                }
+                else
+                {
+                    index = 0;
+                    indexnext = 0;
+                    return 0;
+                }
+            }
+        }
+
+        public Double2 GetPositionAtTime(int timeSecond, bool clamped = false)
+        {
+            double t = GetInterpolatedT(timeSecond, out int index, out int nextIndex, clamped);
+            Double2 a = trajectory[index].Pos;
+            Double2 b = trajectory[nextIndex].Pos;
 
             return Double2.Lerp(a, b, t);
         }
-
-        public Double2 GetPositionAtTime(int timeSecond)
+        public Double2 GetVelocityAtTime(int timeSecond, bool clamed = false)
         {
-            timeSecond += globalSecond;
+            double t = GetInterpolatedT(timeSecond, out int index, out int nextIndex, clamed);
+            Double2 a = trajectory[index].Velocity;
+            Double2 b = trajectory[nextIndex].Velocity;
 
-            int index = (timeSecond) % trajectory.Count;
-            return trajectory[index].Pos;
-        }
-        public Double2 GetVelocityAtTime(int timeSecond)
-        {
-            timeSecond += globalSecond;
-
-            int index = (timeSecond) % trajectory.Count;
-            return trajectory[index].Velocity;
+            return Double2.Lerp(a, b, t);
         }
         #endregion
 
@@ -53,11 +73,12 @@ namespace SpaceSimulation
 
         //Trajectory calculation
         //cache
-        protected int calculationSecond = 0;
+        protected int localSecond = 0;
+        protected int calculationSecond => localSecond + globalSecond;
 
         public void InitCalculation(Double2 position, Double2 up, Double2 startingVelocity)
         {
-            calculationSecond = 0;
+            localSecond = 0;
 
             trajectory = new List<TrajectoryData>();
 
@@ -69,7 +90,7 @@ namespace SpaceSimulation
 
         public void CalculateNext(CelestialBody[] otherObjects)
         {
-            if (calculationSecond % pathResolution == 0)
+            if (localSecond % pathResolution == 0)
                 trajectory.Add(current_t_data);
 
             var newForce = GetCurrentForces(otherObjects);
@@ -78,52 +99,50 @@ namespace SpaceSimulation
             current_t_data.Velocity += newForce / current_t_data.mass;
 
             CelestialBody planetHit = null;
+            Double2 intersection = Double2.zero;
             //check if newPosition is inside planet
             foreach (var planet in otherObjects)
             {
-                var planetPos = planet.GetPositionAtTime(calculationSecond);
-
-                var X = current_t_data.Pos.x - planetPos.x;
-                var Y = current_t_data.Pos.x - planetPos.y;
-
-                var m = current_t_data.Velocity.y / current_t_data.Velocity.x;
-                var c = Y - (m * X);
+                var planetPos = planet.GetPositionAtTime(calculationSecond + globalSecond);
                 var r = planet.radius;
+                var possiblePos = current_t_data.Pos + current_t_data.Velocity;
+                var dirToPlanet = planetPos - current_t_data.Pos;
+                var dirToPos = current_t_data.Velocity;
 
-                var rSqr = Math.Pow(r, 2);
-                var mSqr = Math.Pow(m, 2);
-                var discriminant = rSqr + (mSqr * rSqr) - Math.Pow(c, 2);
+                var possiblePosSqrDistToPlanet = (planetPos - possiblePos).sqrmagnitude;
 
-                if (discriminant > 0)
+                bool collision = false;
+                if(possiblePosSqrDistToPlanet < r * r)
                 {
-                    var dSqrt = Math.Sqrt(discriminant);
+                    collision = true;
+                }
+                else if(dirToPlanet.sqrmagnitude < dirToPos.sqrmagnitude)
+                {
+                    var a = dirToPos;
+                    var b = dirToPlanet;
+                    var angle = Math.Acos(((a.x * b.x) + (a.y * b.y)) / (Math.Sqrt((a.x * a.x) + (a.y * a.y)) * Math.Sqrt((b.x * b.x) + (b.y * b.y))));
+                    var interceptDist = Math.Sin(angle) * dirToPlanet.magnitude;
 
+                    if (interceptDist <= planet.radius)
+                        collision = true;
+                }
+
+                if (collision == true)
+                {
                     planetHit = planet;
-
-                    var x1 = ((-m * c) + dSqrt) / (1 + mSqr);
-                    var x2 = ((-m * c) - dSqrt) / (1 + mSqr);
-
-                    var point1 = new Double2(x1, (m * x1) + c);
-                    var point2 = new Double2(x2, (m * x2) + c);
-
-                    var sqrdist1 = (point1 - current_t_data.Pos).sqrmagnitude;
-                    var sqrdist2 = (point2 - current_t_data.Pos).sqrmagnitude;
-
-                    if (sqrdist1 < sqrdist2)
-                        current_t_data.Pos = point1;
-                    else
-                        current_t_data.Pos = point2;
-
-                    break;
+                    intersection = planetPos;
                 }
             }
 
             if (planetHit != null)
-                current_t_data.Velocity = planetHit.GetVelocityAtTime(calculationSecond);
+            {
+                current_t_data.Velocity = planetHit.GetVelocityAtTime(calculationSecond + globalSecond);
+                current_t_data.Pos = intersection;
+            }
             else
                 current_t_data.Pos += current_t_data.Velocity;
 
-            calculationSecond++;
+            localSecond++;
         }
 
         //forces
