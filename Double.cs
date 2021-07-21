@@ -9,6 +9,8 @@ namespace SpaceSimulation
         public double y;
 
         public static Double2 zero => new Double2(0, 0);
+        public static Double2 one => new Double2(1, 1);
+        public static Double2 perpendicular => new Double2(-1, 1);
 
         public Double2(double _x, double _y)
         {
@@ -40,7 +42,6 @@ namespace SpaceSimulation
             get
             {
                 var mag = magnitude;
-
                 return new Double2(x, y) / mag;
             }
         }

@@ -12,7 +12,7 @@ namespace SpaceSimulation
         protected override Double2 GetCurrentForces(CelestialBody[] otherObjects)
         {
             var newForces = base.GetCurrentForces(otherObjects);
-            //newForces += GetThrust(otherObjects);
+            newForces += GetThrust(otherObjects);
 
             return newForces;
         }
@@ -42,7 +42,7 @@ namespace SpaceSimulation
             double grav = GetRawForce(current_t_data.Pos, nearest);
 
             // get total acceleration of craft.
-            double accel = SpaceSimulation.exhaustVelo * (SpaceSimulation.fuelBurnRate - grav);
+            double accel = SpaceSimulation.exhaustVelo * (SpaceSimulation.fuelBurnRate);
 
             Double2 dir = current_t_data.Dir; // going against the earth
             return dir.normalized * accel;

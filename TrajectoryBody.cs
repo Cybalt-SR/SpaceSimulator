@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
 using static SpaceSimulation.SpaceSimulation;
 
@@ -17,11 +18,12 @@ namespace SpaceSimulation
     public class TrajectoryBody
     {
         public List<TrajectoryData> trajectory;
+        public int trajectoryResolution = 3600;
 
         #region utils
         public double GetInterpolatedT(int time, out int index, out int indexnext, bool clamped = false)
         {
-            double accurateindex = ((double)time / pathResolution);
+            double accurateindex = ((double)time / trajectoryResolution);
             bool withinClamp = accurateindex < trajectory.Count - 1 && accurateindex > 0;
 
             if (clamped == false || withinClamp == true)
@@ -90,13 +92,12 @@ namespace SpaceSimulation
 
         public void CalculateNext(CelestialBody[] otherObjects)
         {
-            if (localSecond % pathResolution == 0)
+            if (localSecond % trajectoryResolution == 0)
                 trajectory.Add(current_t_data);
 
             var newForce = GetCurrentForces(otherObjects);
-
             current_t_data.Force = newForce;
-            current_t_data.Velocity += newForce / current_t_data.mass;
+            current_t_data.Velocity += current_t_data.Force / current_t_data.mass;
 
             CelestialBody planetHit = null;
             Double2 intersection = Double2.zero;
@@ -105,39 +106,33 @@ namespace SpaceSimulation
             {
                 var planetPos = planet.GetPositionAtTime(calculationSecond + globalSecond);
                 var r = planet.radius;
-                var possiblePos = current_t_data.Pos + current_t_data.Velocity;
-                var dirToPlanet = planetPos - current_t_data.Pos;
-                var dirToPos = current_t_data.Velocity;
+                var C = planetPos - current_t_data.Pos;
+                var V = current_t_data.Velocity;
 
-                var possiblePosSqrDistToPlanet = (planetPos - possiblePos).sqrmagnitude;
+                var a = 1 + ((V.y * V.y) / (V.x * V.x));
+                var b = (-2.0 * (V.y / V.x) * C.y) - (2.0 * C.x);
+                var c = (C.x * C.x) + (C.y * C.y) - (r * r);
 
-                bool collision = false;
-                if(possiblePosSqrDistToPlanet < r * r)
+                var discriminant = (b * b) - (4 * a * c);
+
+                if (discriminant >= 0)
                 {
-                    collision = true;
-                }
-                else if(dirToPlanet.sqrmagnitude < dirToPos.sqrmagnitude)
-                {
-                    var a = dirToPos;
-                    var b = dirToPlanet;
-                    var angle = Math.Acos(((a.x * b.x) + (a.y * b.y)) / (Math.Sqrt((a.x * a.x) + (a.y * a.y)) * Math.Sqrt((b.x * b.x) + (b.y * b.y))));
-                    var interceptDist = Math.Sin(angle) * dirToPlanet.magnitude;
+                    double xsign = Math.Sign(V.x);
+                    var X = (-b - (xsign * Math.Sqrt(discriminant))) / (a * 2.0);
 
-                    if (interceptDist <= planet.radius)
-                        collision = true;
-                }
-
-                if (collision == true)
-                {
-                    planetHit = planet;
-                    intersection = planetPos;
+                    if (Math.Abs(X) < Math.Abs(V.x))
+                    {
+                        planetHit = planet;
+                        intersection = new Double2(X, X * (V.y / V.x));
+                        break;
+                    }
                 }
             }
 
             if (planetHit != null)
             {
+                current_t_data.Pos += intersection;
                 current_t_data.Velocity = planetHit.GetVelocityAtTime(calculationSecond + globalSecond);
-                current_t_data.Pos = intersection;
             }
             else
                 current_t_data.Pos += current_t_data.Velocity;
@@ -162,14 +157,16 @@ namespace SpaceSimulation
 
             foreach (var body in gravityHolders)
             {
-                var bodyPos = body.GetPositionAtTime(calculationSecond);
+                var bodyPos = body.GetPositionAtTime(calculationSecond + globalSecond);
 
-                double sqrdist = Math.Pow((pos - bodyPos).magnitude, 2);
+                double sqrdist = (pos - bodyPos).sqrmagnitude;
                 //Gravity equation
                 double rawForce = gconst * (current_t_data.mass * body.current_t_data.mass / sqrdist);
 
                 Double2 dir = bodyPos - pos;
-                force += dir.normalized * rawForce;
+                var possibleNewForce = dir.normalized * rawForce;
+
+                force += possibleNewForce;
             }
 
             return force;
