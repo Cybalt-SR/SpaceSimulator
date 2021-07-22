@@ -34,6 +34,7 @@ namespace SpaceSimulation
         {
             get
             {
+			// distance between 2 points
                 return Math.Sqrt((x * x) + (y * y));
             }
         }
@@ -47,6 +48,7 @@ namespace SpaceSimulation
         }
         public static Double2 Lerp(Double2 a , Double2 b, double t)
         {
+			// perform arithmetic sequence math between values of a and b
             var value = new Double2(Double.Lerp(a.x, b.x, t), Double.Lerp(a.y, b.y, t));
             return value;
         }
@@ -61,8 +63,7 @@ namespace SpaceSimulation
     {
         public static double Lerp(double a, double b, double t)
         {
-            var value = a + ((b - a) * t);
-
+            var value = a + ((b - a) * t); // arithmetic sequence, b - a is common difference, t is iterations, a is a0
             if (double.IsNaN(value))
                 return a;
             else

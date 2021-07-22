@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace SpaceSimulation
 {
     [Serializable]
+	// represents a planet
     public class CelestialBody : TrajectoryBody
     {
         public double radius = 0;

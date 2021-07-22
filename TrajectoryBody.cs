@@ -59,9 +59,9 @@ namespace SpaceSimulation
 
             return Double2.Lerp(a, b, t);
         }
-        public Double2 GetVelocityAtTime(int timeSecond, bool clamed = false)
+        public Double2 GetVelocityAtTime(int timeSecond, bool clamped = false)
         {
-            double t = GetInterpolatedT(timeSecond, out int index, out int nextIndex, clamed);
+            double t = GetInterpolatedT(timeSecond, out int index, out int nextIndex, clamped);
             Double2 a = trajectory[index].Velocity;
             Double2 b = trajectory[nextIndex].Velocity;
 
@@ -79,14 +79,15 @@ namespace SpaceSimulation
         protected int calculationSecond => localSecond + startingSecond;
 
         public void InitCalculation(Double2 position, Double2 up, Double2 startingVelocity, int startingSecond)
-        {
+        {	
+			// constructs the class (js speak)
             localSecond = 0;
             this.startingSecond = startingSecond;
 
             trajectory = new List<TrajectoryData>();
 
             current_t_data.Dir = up;
-            current_t_data.Pos = position;
+            current_t_data.Pos = position; 
             current_t_data.Velocity = startingVelocity;
             current_t_data.Force = Double2.zero;
         }
@@ -96,18 +97,19 @@ namespace SpaceSimulation
             if (localSecond % trajectoryResolution == 0)
                 trajectory.Add(current_t_data);
 
-            var newForce = GetCurrentForces(otherObjects);
+            var newForce = GetCurrentForces(otherObjects); // get total gravity exerted
             current_t_data.Force = newForce;
             current_t_data.Velocity += current_t_data.Force / current_t_data.mass;
 
-            CelestialBody planetHit = null;
+            CelestialBody planetHit = null; // planet that body has intersected positions with
             Double2 intersection = Double2.zero;
+
             //check if newPosition is inside planet
             foreach (var planet in otherObjects)
             {
-                var planetPos = planet.GetPositionAtTime(calculationSecond);
+                var planetPos = planet.GetPositionAtTime(calculationSecond); // determine where planet would be at that time
                 var r = planet.radius;
-                var C = planetPos - current_t_data.Pos;
+                var C = planetPos - current_t_data.Pos; // distance between planet and body
                 var V = current_t_data.Velocity;
 
                 var a = 1 + ((V.y * V.y) / (V.x * V.x));
@@ -131,12 +133,12 @@ namespace SpaceSimulation
             }
 
             if (planetHit != null)
-            {
+            {	
                 current_t_data.Pos += intersection;
-                current_t_data.Velocity = planetHit.GetVelocityAtTime(calculationSecond);
+                current_t_data.Velocity = planetHit.GetVelocityAtTime(calculationSecond); // velocity of body matches velocity of planet that was hit
             }
             else
-                current_t_data.Pos += current_t_data.Velocity;
+                current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
 
             localSecond++;
         }
@@ -144,10 +146,11 @@ namespace SpaceSimulation
         //forces
         #region Forces
 
+		// shared between everything that inherits from TracjetoryBody
         protected virtual Double2 GetCurrentForces(CelestialBody[] otherObjects)
         {
             var newForce = Double2.zero;
-            newForce += GetGravity(current_t_data.Pos, otherObjects);
+            newForce += GetGravity(current_t_data.Pos, otherObjects); 
 
             return newForce;
         }
@@ -158,16 +161,19 @@ namespace SpaceSimulation
 
             foreach (var body in gravityHolders)
             {
-                var bodyPos = body.GetPositionAtTime(calculationSecond);
+                // loop through gravityHolders then try to get summative total of their forces
+				// determine position of body at given time
+				var bodyPos = body.GetPositionAtTime(calculationSecond);
 
-                double sqrdist = (pos - bodyPos).sqrmagnitude;
-                //Gravity equation
-                double rawForce = gconst * (current_t_data.mass * body.current_t_data.mass / sqrdist);
+                double sqrdist = (pos - bodyPos).sqrmagnitude; // get distance of body to planet
+				// how strong the attraction is between planet and body
+                double rawForce = gconst * (current_t_data.mass * body.current_t_data.mass / sqrdist); //Gravity equation
 
+				// get direction between body and planet through their positions
                 Double2 dir = bodyPos - pos;
-                var possibleNewForce = dir.normalized * rawForce;
+                var possibleNewForce = dir.normalized * rawForce; //combine data of direction and attraction force
 
-                force += possibleNewForce;
+                force += possibleNewForce; // add to summative force
             }
 
             return force;
