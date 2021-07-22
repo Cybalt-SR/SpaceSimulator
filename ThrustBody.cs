@@ -41,7 +41,7 @@ namespace SpaceSimulation
             double grav = GetRawForce(current_t_data.Pos, nearest);
 
             // get total acceleration of craft.
-            double accel = SpaceSimulation.exhaustVelo * SpaceSimulation.fuelBurnRate;
+            double accel = SpaceSimulation.exhaustVelo * (SpaceSimulation.fuelBurnRate - grav);
 
             Double2 dir = current_t_data.Dir; // going against the earth
             return dir.normalized * accel;
