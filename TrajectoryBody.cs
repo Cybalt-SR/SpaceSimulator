@@ -75,11 +75,13 @@ namespace SpaceSimulation
         //Trajectory calculation
         //cache
         protected int localSecond = 0;
-        protected int calculationSecond => localSecond + globalSecond;
+        public int startingSecond { get; protected set; }
+        protected int calculationSecond => localSecond + startingSecond;
 
-        public void InitCalculation(Double2 position, Double2 up, Double2 startingVelocity)
+        public void InitCalculation(Double2 position, Double2 up, Double2 startingVelocity, int startingSecond)
         {
             localSecond = 0;
+            this.startingSecond = startingSecond;
 
             trajectory = new List<TrajectoryData>();
 
@@ -103,7 +105,7 @@ namespace SpaceSimulation
             //check if newPosition is inside planet
             foreach (var planet in otherObjects)
             {
-                var planetPos = planet.GetPositionAtTime(calculationSecond + globalSecond);
+                var planetPos = planet.GetPositionAtTime(calculationSecond);
                 var r = planet.radius;
                 var C = planetPos - current_t_data.Pos;
                 var V = current_t_data.Velocity;
@@ -131,7 +133,7 @@ namespace SpaceSimulation
             if (planetHit != null)
             {
                 current_t_data.Pos += intersection;
-                current_t_data.Velocity = planetHit.GetVelocityAtTime(calculationSecond + globalSecond);
+                current_t_data.Velocity = planetHit.GetVelocityAtTime(calculationSecond);
             }
             else
                 current_t_data.Pos += current_t_data.Velocity;
@@ -156,7 +158,7 @@ namespace SpaceSimulation
 
             foreach (var body in gravityHolders)
             {
-                var bodyPos = body.GetPositionAtTime(calculationSecond + globalSecond);
+                var bodyPos = body.GetPositionAtTime(calculationSecond);
 
                 double sqrdist = (pos - bodyPos).sqrmagnitude;
                 //Gravity equation
