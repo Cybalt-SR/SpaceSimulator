@@ -9,6 +9,7 @@ namespace SpaceSimulation
     [Serializable]
     public class ThrustBody : TrajectoryBody
     {	
+		public double rocketLength = 0; // length of the rocket in meters
 		// current_t_data is an inherited value from TrajectoryBody
 
 		// override the GetCurrentForces method from TrajectoryBody to add thrust in the forces
@@ -18,6 +19,21 @@ namespace SpaceSimulation
             newForces += GetThrust(otherObjects); // add thrust (special to ThrustBodies)
             return newForces;
         }
+	
+		// turning energy should be a negative value if the rocket is turning right
+		// in trigonometry clockwise is negative
+		Double GetRotationalVelocity(Double turningEnergy, Double timespan){
+			// formula for getting the inertia of an object whose pivot is in the center
+			// I = 1/12 * M * L^2
+			Double inertia = (Math.Pow(rocketLength, 2) * current_t_data.mass) / 12;
+			Double torque = turningEnergy * rocketLength/2; // should be newton-meters
+			Double finalMomentum = torque * timespan; // n * m * s
+
+			// initial momentum should be subtracted from this but the rocket has no angular momentum when the turn is started
+			Double angularMomentum = finalMomentum / inertia; // this should be in radians / second
+			Double result = (angularMomentum / SpaceSimulation.PI) * 180; // convert it to radians / second
+			return result;
+		}
 
         Double2 GetThrust(CelestialBody[] otherObjects)
         {
