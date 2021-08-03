@@ -31,7 +31,7 @@ namespace SpaceSimulation
 
 			// initial momentum should be subtracted from this but the rocket has no angular momentum when the turn is started
 			Double angularMomentum = finalMomentum / inertia; // this should be in radians / second
-			Double result = (angularMomentum / SpaceSimulation.PI) * 180; // convert it to radians / second
+			Double result = (angularMomentum / SpaceSimulation.PI) * 180; // convert it to degrees / second
 			return result;
 		}
 
