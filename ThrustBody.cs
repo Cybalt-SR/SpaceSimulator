@@ -8,7 +8,8 @@ namespace SpaceSimulation
 {
     [Serializable]
     public class ThrustBody : TrajectoryBody
-    {	
+    {
+        public List<Double2> thrustKeys;
 		public double rocketLength = 0; // length of the rocket in meters
 		// current_t_data is an inherited value from TrajectoryBody
 
@@ -16,11 +17,10 @@ namespace SpaceSimulation
         protected override Double2 GetCurrentForces(CelestialBody[] otherObjects)
         {
             var newForces = base.GetCurrentForces(otherObjects); // gets gravity of trajectoryBody
-            newForces += GetThrust(otherObjects); // add thrust (special to ThrustBodies)
+            newForces += GetThrust(otherObjects, LerpKeyList(thrustKeys, localSecond)); // add thrust (special to ThrustBodies)
             return newForces;
         }
 
-<<<<<<< HEAD
         // turning energy should be a negative value if the rocket is turning right
         // in trigonometry clockwise is negative
         double GetRotationalVelocity(double turningEnergy, double timespan)
@@ -35,16 +35,9 @@ namespace SpaceSimulation
             double angularMomentum = finalMomentum / inertia; // this should be in radians / second
             double result = (angularMomentum / SpaceSimulation.PI) * 180; // convert it to radians / second
             return result;
-        }
-=======
-			// initial momentum should be subtracted from this but the rocket has no angular momentum when the turn is started
-			Double angularMomentum = finalMomentum / inertia; // this should be in radians / second
-			Double result = (angularMomentum / SpaceSimulation.PI) * 180; // convert it to degrees / second
-			return result;
 		}
->>>>>>> 749af4f038edb3065a6e3b70f3deee43b5390883
 
-        Double2 GetThrust(CelestialBody[] otherObjects)
+        Double2 GetThrust(CelestialBody[] otherObjects, double percentage)
         {
             CelestialBody nearest = null; // the nearest planet
             double nearestDist = 0; // distance of the craft to the nearest planet
@@ -75,12 +68,7 @@ namespace SpaceSimulation
             double grav = GetRawForce(current_t_data.Pos, nearest);
 
             // get total acceleration of craft.
-<<<<<<< HEAD
-            double accel = SpaceSimulation.exhaustVelo * (SpaceSimulation.fuelBurnRate);
-=======
-            double accel = (SpaceSimulation.exhaustVelo * SpaceSimulation.fuelBurnRate) - grav;
->>>>>>> 749af4f038edb3065a6e3b70f3deee43b5390883
-
+            double accel = SpaceSimulation.exhaustVelo * (SpaceSimulation.fuelBurnRate) * percentage;
             Double2 dir = current_t_data.Dir; // going against the earth
             return dir.normalized * accel;
         }
