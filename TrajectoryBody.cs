@@ -20,6 +20,34 @@ namespace SpaceSimulation
         public int trajectoryResolution = 3600;
 
         #region utils
+        public double LerpKeyList(List<Double2> list, double t)
+        {
+            Double2 preKey = list[0];
+            Double2 postKey = preKey;
+
+            foreach (var item in list)
+            {
+                if (item.x < t)
+                    preKey = item;
+                else
+                {
+                    postKey = item;
+                    break;
+                }
+            }
+
+            double maxT = postKey.x - preKey.x;
+            if (maxT > 0)
+            {
+                double normalizedT = (t - preKey.x) / maxT;
+                return Double.Lerp(preKey.y, postKey.y, normalizedT);
+            }
+            else
+            {
+                return preKey.y;
+            }
+        }
+
         public double GetInterpolatedT(int time, out int index, out int indexnext, bool clamped = false)
         {
             double accurateindex = ((double)time / trajectoryResolution);
