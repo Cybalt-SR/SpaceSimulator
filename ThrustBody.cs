@@ -19,21 +19,30 @@ namespace SpaceSimulation
             newForces += GetThrust(otherObjects); // add thrust (special to ThrustBodies)
             return newForces;
         }
-	
-		// turning energy should be a negative value if the rocket is turning right
-		// in trigonometry clockwise is negative
-		Double GetRotationalVelocity(Double turningEnergy, Double timespan){
-			// formula for getting the inertia of an object whose pivot is in the center
-			// I = 1/12 * M * L^2
-			Double inertia = (Math.Pow(rocketLength, 2) * current_t_data.mass) / 12;
-			Double torque = turningEnergy * rocketLength/2; // should be newton-meters
-			Double finalMomentum = torque * timespan; // n * m * s
 
+<<<<<<< HEAD
+        // turning energy should be a negative value if the rocket is turning right
+        // in trigonometry clockwise is negative
+        double GetRotationalVelocity(double turningEnergy, double timespan)
+        {
+            // formula for getting the inertia of an object whose pivot is in the center
+            // I = 1/12 * M * L^2
+            double inertia = (Math.Pow(rocketLength, 2) * current_t_data.mass) / 12;
+            double torque = turningEnergy * rocketLength / 2; // should be newton-meters
+            double finalMomentum = torque * timespan; // n * m * s
+
+            // initial momentum should be subtracted from this but the rocket has no angular momentum when the turn is started
+            double angularMomentum = finalMomentum / inertia; // this should be in radians / second
+            double result = (angularMomentum / SpaceSimulation.PI) * 180; // convert it to radians / second
+            return result;
+        }
+=======
 			// initial momentum should be subtracted from this but the rocket has no angular momentum when the turn is started
 			Double angularMomentum = finalMomentum / inertia; // this should be in radians / second
-			Double result = (angularMomentum / SpaceSimulation.PI) * 180; // convert it to radians / second
+			Double result = (angularMomentum / SpaceSimulation.PI) * 180; // convert it to degrees / second
 			return result;
 		}
+>>>>>>> 749af4f038edb3065a6e3b70f3deee43b5390883
 
         Double2 GetThrust(CelestialBody[] otherObjects)
         {
@@ -66,7 +75,11 @@ namespace SpaceSimulation
             double grav = GetRawForce(current_t_data.Pos, nearest);
 
             // get total acceleration of craft.
-            double accel = SpaceSimulation.exhaustVelo * (SpaceSimulation.fuelBurnRate - grav);
+<<<<<<< HEAD
+            double accel = SpaceSimulation.exhaustVelo * (SpaceSimulation.fuelBurnRate);
+=======
+            double accel = (SpaceSimulation.exhaustVelo * SpaceSimulation.fuelBurnRate) - grav;
+>>>>>>> 749af4f038edb3065a6e3b70f3deee43b5390883
 
             Double2 dir = current_t_data.Dir; // going against the earth
             return dir.normalized * accel;
