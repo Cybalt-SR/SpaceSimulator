@@ -120,11 +120,8 @@ namespace SpaceSimulation
             current_t_data.Force = Double2.zero;
         }
 
-        public void CalculateNext(CelestialBody[] otherObjects)
-        {
-            if (localSecond % trajectoryResolution == 0)
-                trajectory.Add(current_t_data);
-
+        public void CalculateNext(CelestialBody[] otherObjects){
+            if (localSecond % trajectoryResolution == 0) trajectory.Add(current_t_data);
             var newForce = GetCurrentForces(otherObjects); // get total gravity exerted
             current_t_data.Force = newForce;
             current_t_data.Velocity += current_t_data.Force / current_t_data.mass;
@@ -133,40 +130,64 @@ namespace SpaceSimulation
             Double2 intersection = Double2.zero;
 
             //check if newPosition is inside planet
-            foreach (var planet in otherObjects)
-            {
-                var planetPos = planet.GetPositionAtTime(calculationSecond); // determine where planet would be at that time
-                var r = planet.radius;
-                var C = planetPos - current_t_data.Pos; // distance between planet and body
-                var V = current_t_data.Velocity;
+            foreach (var planet in otherObjects) {
+                var absolutePlanetPos = planet.GetPositionAtTime(calculationSecond); // absolute position of the planet
+                var planetRadius = planet.radius; // radius of the planet
+                var relativePlanetPos = planetPos - current_t_data.Pos; // position of planet relative to rocket
+                var rocketVelocity = current_t_data.Velocity; // velocity of the rocket
 
-                var a = 1 + ((V.y * V.y) / (V.x * V.x));
-                var b = (-2.0 * (V.y / V.x) * C.y) - (2.0 * C.x);
-                var c = (C.x * C.x) + (C.y * C.y) - (r * r);
+				// How this works is you have a system of equations of a line and a circle
+				// if you solve them together you have a quadratic equation, 
+				// and you can determine through the discriminant if there is an intersection
+				
+				// (x - d)^2 + (y - e)^2 = r^2       circle
+				// d, e are the coordinates of the center of the planet
+				// r is the radius of the planet
 
+				// slope intercept of a line 
+				// as the planet's position was computed to be relative to the rocket, the y-intercept can be ignored
+				// y = mx      m is the slope of the line, which can be determined through the velocity of the rocket
+				
+				// (x - d)^2 + (mx - e)^2 = r^2                      			substitution
+				// (x^2 - 2dx - d^2) + (m^2 * x^2 - 2mex - e^2) = r^2    		expansion
+				// (m^2 * x^2 + x^2) + (-2dx - 2mex) + (d^2 + e^2 - r^2) = 0  	let's go ahead and clean that up
+				// (m^2 + 1) * x^2 + (-2d - 2me)x + (d^2 + e^2 - r^2) = 0		now it's clear that it's a quadratic equation
+				
+				// a = m^2 + 1 			   	m is the slope of the line
+				// b = -2d -2me   			d is x coordinate of circle, e is y coordinate of circle
+				// c = d^2 + e^2 - r^2		r is the radius
+
+				// this is the slope of the line because the velocity represents the change in position over time
+				var slope = rocketVelocity.y / rocketVelocity.x;
+                
+				var a = Math.pow(slope, 2) + 1;
+				var b = (-2.0 * relativePlanetPos.x) + (-2.0 * slope * relativePlanetPos.y);
+				var c = Math.pow(relativePlanetPos.x, 2) + Math.pow(relativePlanetPos.y, 2) - Math.pow(planetRadius, 2);
                 var discriminant = (b * b) - (4 * a * c);
 
-                if (discriminant >= 0)
-                {
-                    double xsign = Math.Sign(V.x);
-                    var X = (-b - (xsign * Math.Sqrt(discriminant))) / (a * 2.0);
+				// discriminant = 0 then there is 1 collision
+				// discriminant > 0 then there is 2 collisions
+                if (discriminant >= 0){
+					// x sign is used for the directionality of travel of the ship along the slope
+                    double xsign = Math.Sign(V.x); // gets the sign of a number, either 1 or -1
+                    var root = (-b - (xsign * Math.Sqrt(discriminant))) / (a * 2.0); // relative x coordinate of where collision takes place
 
-                    if (Math.Abs(X) < Math.Abs(V.x))
-                    {
+					// If the root is between the initial position and the final position, then there has been a collision
+                    if (Math.Abs(X) < Math.Abs(V.x)){
                         planetHit = planet;
-                        intersection = new Double2(X, X * (V.y / V.x));
+                        intersection = new Double2(X, X * (V.y / V.x)); // relative coordinates where the collision takes place
                         break;
                     }
                 }
             }
 
-            if (planetHit != null)
-            {	
+            if (planetHit != null){	
+				// position of body now matches with the planet (intersection is relative from rocket)
                 current_t_data.Pos += intersection;
-                current_t_data.Velocity = planetHit.GetVelocityAtTime(calculationSecond); // velocity of body matches velocity of planet that was hit
-            }
-            else
-                current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
+
+				// velocity of body matches velocity of planet that was hit due to sticky collision
+                current_t_data.Velocity = planetHit.GetVelocityAtTime(calculationSecond);
+            }else current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
 
             localSecond++;
         }
