@@ -27,11 +27,11 @@ namespace SpaceSimulation
 			// I = 1/12 * M * L^2
 			Double inertia = (Math.Pow(rocketLength, 2) * current_t_data.mass) / 12;
 			Double torque = turningEnergy * rocketLength/2; // should be newton-meters
-			Double finalMomentum = torque * timespan; // n * m * s
+			Double angularMomentum = torque * timespan; // n * m * s
 
 			// initial momentum should be subtracted from this but the rocket has no angular momentum when the turn is started
-			Double angularMomentum = finalMomentum / inertia; // this should be in radians / second
-			Double result = (angularMomentum / SpaceSimulation.PI) * 180; // convert it to degrees / second
+			Double angularVelocity = angularMomentum / inertia; // this should be in radians / second
+			Double result = (angularVelocity / SpaceSimulation.PI) * 180; // convert it to degrees / second
 			return result;
 		}
 
@@ -66,7 +66,7 @@ namespace SpaceSimulation
             double grav = GetRawForce(current_t_data.Pos, nearest);
 
             // get total acceleration of craft.
-            double accel = (SpaceSimulation.exhaustVelo * SpaceSimulation.fuelBurnRate) - grav;
+            double accel = (SpaceSimulation.fuelBurnRate * SpaceSimulation.exhaustVelo) - grav;
 
             Double2 dir = current_t_data.Dir; // going against the earth
             return dir.normalized * accel;
