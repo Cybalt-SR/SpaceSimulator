@@ -129,8 +129,10 @@ namespace SpaceSimulation
 				// b = -2d -2me   			d is x coordinate of circle, e is y coordinate of circle
 				// c = d^2 + e^2 - r^2		r is the radius
 
-				var slope = V.y / V.x; // this is the slope of the line because the velocity represents the change in position over time
-                var a = Math.pow(slope, 2) + 1;
+				// this is the slope of the line because the velocity represents the change in position over time
+				var slope = rocketVelocity.y / rocketVelocity.x;
+                
+				var a = Math.pow(slope, 2) + 1;
 				var b = (-2.0 * relativePlanetPos.x) + (-2.0 * slope * relativePlanetPos.y);
 				var c = Math.pow(relativePlanetPos.x, 2) + Math.pow(relativePlanetPos.y, 2) - Math.pow(planetRadius, 2);
                 var discriminant = (b * b) - (4 * a * c);
@@ -138,9 +140,9 @@ namespace SpaceSimulation
 				// discriminant = 0 then there is 1 collision
 				// discriminant > 0 then there is 2 collisions
                 if (discriminant >= 0){
+					// x sign is used for the directionality of travel of the ship along the slope
                     double xsign = Math.Sign(V.x); // gets the sign of a number, either 1 or -1
                     var root = (-b - (xsign * Math.Sqrt(discriminant))) / (a * 2.0); // relative x coordinate of where collision takes place
-					// x sign is used for the directionality of travel of the ship
 
 					// If the root is between the initial position and the final position, then there has been a collision
                     if (Math.Abs(X) < Math.Abs(V.x)){
@@ -154,7 +156,7 @@ namespace SpaceSimulation
             if (planetHit != null){	
 				// position of body now matches with the planet (intersection is relative from rocket)
                 current_t_data.Pos += intersection;
-				
+
 				// velocity of body matches velocity of planet that was hit due to sticky collision
                 current_t_data.Velocity = planetHit.GetVelocityAtTime(calculationSecond);
             }else current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
