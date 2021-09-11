@@ -99,7 +99,7 @@ namespace SpaceSimulation
             current_t_data.Velocity += current_t_data.Force / current_t_data.mass;
 
             CelestialBody planetHit = null; // planet that body has intersected positions with
-            Double2 intersection = Double2.zero;
+            Double2 intersection = Double2.zero; // coordinates relative to the current position to the rocket where an intersection takes place
 
             //check if newPosition is inside planet
             foreach (var planet in otherObjects) {
@@ -112,22 +112,22 @@ namespace SpaceSimulation
 				// if you solve them together you have a quadratic equation, 
 				// and you can determine through the discriminant if there is an intersection
 				
-				// (x - d)^2 + (y - e)^2 = r^2       circle
-				// d, e are the coordinates of the center of the planet
+				// (x - h)^2 + (y - k)^2 = r^2       circle
+				// (h, k) are the coordinates of the center of the planet
 				// r is the radius of the planet
 
 				// slope intercept of a line 
 				// as the planet's position was computed to be relative to the rocket, the y-intercept can be ignored
 				// y = mx      m is the slope of the line, which can be determined through the velocity of the rocket
 				
-				// (x - d)^2 + (mx - e)^2 = r^2                      			substitution
-				// (x^2 - 2dx - d^2) + (m^2 * x^2 - 2mex - e^2) = r^2    		expansion
-				// (m^2 * x^2 + x^2) + (-2dx - 2mex) + (d^2 + e^2 - r^2) = 0  	let's go ahead and clean that up
-				// (m^2 + 1) * x^2 + (-2d - 2me)x + (d^2 + e^2 - r^2) = 0		now it's clear that it's a quadratic equation
+				// (x - h)^2 + (mx - k)^2 = r^2                      			substitution
+				// (x^2 - 2hx + h^2) + (m^2 * x^2 - 2mkx + k^2) = r^2    		expansion
+				// (m^2 * x^2 + x^2) + (-2hx - 2mkx) + (h^2 + k^2 - r^2) = 0  	let's go ahead and clean that up
+				// (m^2 + 1) * x^2 + (-2h - 2mk)x + (h^2 + k^2 - r^2) = 0		now it's clear that it's a quadratic equation
 				
 				// a = m^2 + 1 			   	m is the slope of the line
-				// b = -2d -2me   			d is x coordinate of circle, e is y coordinate of circle
-				// c = d^2 + e^2 - r^2		r is the radius
+				// b = -2h -2mk   			h is x coordinate of circle, k is y coordinate of circle
+				// c = h^2 + k^2 - r^2		r is the radius
 
 				// this is the slope of the line because the velocity represents the change in position over time
 				var slope = rocketVelocity.y / rocketVelocity.x;
@@ -140,15 +140,17 @@ namespace SpaceSimulation
 				// discriminant = 0 then there is 1 collision
 				// discriminant > 0 then there is 2 collisions
                 if (discriminant >= 0){
-					// x sign is used for the directionality of travel of the ship along the slope
-                    double xsign = Math.Sign(V.x); // gets the sign of a number, either 1 or -1
+					// x sign is the directionality of travel of the ship along the slope
+					// it allows the code to get the closer intersection
+                    double xsign = Math.Sign(rocketVelocity.x); // gets the sign of a number, either 1 or -1
                     var root = (-b - (xsign * Math.Sqrt(discriminant))) / (a * 2.0); // relative x coordinate of where collision takes place
 
 					// If the root is between the initial position and the final position, then there has been a collision
-                    if (Math.Abs(X) < Math.Abs(V.x)){
-                        planetHit = planet;
-                        intersection = new Double2(X, X * (V.y / V.x)); // relative coordinates where the collision takes place
-                        break;
+					// current position does not need to be checked since this is relative to the origin, 0 < root < finalPosition
+                    if (Math.Abs(root) < Math.Abs(rocketVelocity.x)){
+                        planetHit = planet; // set planetHit to the current planet
+                        intersection = new Double2(root, root * slope); // relative coordinates where the collision takes place
+                        break; // exit from running the for loop
                     }
                 }
             }
