@@ -47,7 +47,7 @@ namespace SpaceSimulation
             foreach (var item in otherObjects)
             {	
 				// distance of spacecraft to item
-                var newDist = (item.GetPositionAtTime(calculationSecond) - current_t_data.Pos).magnitude;
+                var newDist = (item.GetPositionAtTime(localSecond) - current_t_data.Pos).magnitude;
 
                 if (nearest == null)
                 {
@@ -78,7 +78,7 @@ namespace SpaceSimulation
             // this method returns the raw force of the planet on the body
             // universal gravity equation = gconst * (m1 * m2 / sqrdist)
 
-            double sqrdist = Math.Pow((pos - body.GetPositionAtTime(calculationSecond)).magnitude, 2);
+            double sqrdist = Math.Pow((pos - body.GetPositionAtTime(localSecond)).magnitude, 2);
             double rawForce = SpaceSimulation.gconst * (body.current_t_data.mass * current_t_data.mass / sqrdist);
             return rawForce;
         }

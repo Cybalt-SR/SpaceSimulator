@@ -8,19 +8,23 @@ namespace SpaceSimulation
     public struct TrajectoryData
     {
         public double mass;
-        public Double2 Velocity;
-        public Double2 Dir;
         public Double2 Pos;
         public Double2 Force;
+        public Double2 Velocity;
+
+        public double Angle;
+        public double Torque;
+        public double AngularVelocity;
     }
 
     public class TrajectoryBody
     {
         public List<TrajectoryData> trajectory;
         public int trajectoryResolution = 3600;
+        public double percentOffset;
 
         #region utils
-        public double LerpKeyList(List<Double2> list, double t)
+        public static double LerpKeyList(List<Double2> list, double t)
         {
             Double2 preKey = list[0];
             Double2 postKey = preKey;
@@ -50,6 +54,8 @@ namespace SpaceSimulation
 
         public double GetInterpolatedT(int time, out int index, out int indexnext, bool clamped = false)
         {
+            time += (int)Math.Round(percentOffset * trajectory.Count * trajectoryResolution);
+
             double accurateindex = ((double)time / trajectoryResolution);
             bool withinClamp = accurateindex < trajectory.Count - 1 && accurateindex > 0;
 
@@ -103,21 +109,21 @@ namespace SpaceSimulation
         //Trajectory calculation
         //cache
         protected int localSecond = 0;
-        public int startingSecond { get; protected set; }
-        protected int calculationSecond => localSecond + startingSecond;
 
-        public void InitCalculation(Double2 position, Double2 up, Double2 startingVelocity, int startingSecond)
+        public void InitCalculation(Double2 position, Double2 startingVelocity, double angle, double startingAngularVelocity)
         {	
 			// constructs the class (js speak)
             localSecond = 0;
-            this.startingSecond = startingSecond;
 
             trajectory = new List<TrajectoryData>();
 
-            current_t_data.Dir = up;
             current_t_data.Pos = position; 
-            current_t_data.Velocity = startingVelocity;
             current_t_data.Force = Double2.zero;
+            current_t_data.Velocity = startingVelocity;
+
+            current_t_data.Angle = angle;
+            current_t_data.Torque = 0;
+            current_t_data.AngularVelocity = startingAngularVelocity;
         }
 
         public void CalculateNext(CelestialBody[] otherObjects){
@@ -131,16 +137,16 @@ namespace SpaceSimulation
 
             //check if newPosition is inside planet
             foreach (var planet in otherObjects) {
-                var absolutePlanetPos = planet.GetPositionAtTime(calculationSecond); // absolute position of the planet
+                var absolutePlanetPos = planet.GetPositionAtTime(localSecond); // absolute position of the planet
                 var planetRadius = planet.radius; // radius of the planet
-                var relativePlanetPos = planetPos - current_t_data.Pos; // position of planet relative to rocket
+                var relativePlanetPos = absolutePlanetPos - current_t_data.Pos; // position of planet relative to rocket
                 var rocketVelocity = current_t_data.Velocity; // velocity of the rocket
 
 				// How this works is you have a system of equations of a line and a circle
 				// if you solve them together you have a quadratic equation, 
 				// and you can determine through the discriminant if there is an intersection
 				
-				// (x - d)^2 + (y - e)^2 = r^2       circle
+				// (x - d)^2 + (y - e)^2 = r^2    circle
 				// d, e are the coordinates of the center of the planet
 				// r is the radius of the planet
 
@@ -160,22 +166,22 @@ namespace SpaceSimulation
 				// this is the slope of the line because the velocity represents the change in position over time
 				var slope = rocketVelocity.y / rocketVelocity.x;
                 
-				var a = Math.pow(slope, 2) + 1;
+				var a = Math.Pow(slope, 2) + 1;
 				var b = (-2.0 * relativePlanetPos.x) + (-2.0 * slope * relativePlanetPos.y);
-				var c = Math.pow(relativePlanetPos.x, 2) + Math.pow(relativePlanetPos.y, 2) - Math.pow(planetRadius, 2);
+				var c = Math.Pow(relativePlanetPos.x, 2) + Math.Pow(relativePlanetPos.y, 2) - Math.Pow(planetRadius, 2);
                 var discriminant = (b * b) - (4 * a * c);
 
 				// discriminant = 0 then there is 1 collision
 				// discriminant > 0 then there is 2 collisions
                 if (discriminant >= 0){
 					// x sign is used for the directionality of travel of the ship along the slope
-                    double xsign = Math.Sign(V.x); // gets the sign of a number, either 1 or -1
+                    double xsign = Math.Sign(rocketVelocity.x); // gets the sign of a number, either 1 or -1
                     var root = (-b - (xsign * Math.Sqrt(discriminant))) / (a * 2.0); // relative x coordinate of where collision takes place
 
 					// If the root is between the initial position and the final position, then there has been a collision
-                    if (Math.Abs(X) < Math.Abs(V.x)){
+                    if (Math.Abs(root) < Math.Abs(rocketVelocity.x)){
                         planetHit = planet;
-                        intersection = new Double2(X, X * (V.y / V.x)); // relative coordinates where the collision takes place
+                        intersection = new Double2(root, root * (rocketVelocity.y / rocketVelocity.x)); // relative coordinates where the collision takes place
                         break;
                     }
                 }
@@ -186,7 +192,7 @@ namespace SpaceSimulation
                 current_t_data.Pos += intersection;
 
 				// velocity of body matches velocity of planet that was hit due to sticky collision
-                current_t_data.Velocity = planetHit.GetVelocityAtTime(calculationSecond);
+                current_t_data.Velocity = planetHit.GetVelocityAtTime(localSecond);
             }else current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
 
             localSecond++;
@@ -212,7 +218,7 @@ namespace SpaceSimulation
             {
                 // loop through gravityHolders then try to get summative total of their forces
 				// determine position of body at given time
-				var bodyPos = body.GetPositionAtTime(calculationSecond);
+				var bodyPos = body.GetPositionAtTime(localSecond);
 
                 double sqrdist = (pos - bodyPos).sqrmagnitude; // get distance of body to planet
 				// how strong the attraction is between planet and body
