@@ -133,7 +133,7 @@ namespace SpaceSimulation
             current_t_data.Velocity += current_t_data.Force / current_t_data.mass;
 
             CelestialBody planetHit = null; // planet that body has intersected positions with
-            Double2 intersection = Double2.zero;
+            Double2 intersection = Double2.zero; // coordinates relative to the current position to the rocket where an intersection takes place
 
             //check if newPosition is inside planet
             foreach (var planet in otherObjects) {
@@ -154,14 +154,14 @@ namespace SpaceSimulation
 				// as the planet's position was computed to be relative to the rocket, the y-intercept can be ignored
 				// y = mx      m is the slope of the line, which can be determined through the velocity of the rocket
 				
-				// (x - d)^2 + (mx - e)^2 = r^2                      			substitution
-				// (x^2 - 2dx - d^2) + (m^2 * x^2 - 2mex - e^2) = r^2    		expansion
-				// (m^2 * x^2 + x^2) + (-2dx - 2mex) + (d^2 + e^2 - r^2) = 0  	let's go ahead and clean that up
-				// (m^2 + 1) * x^2 + (-2d - 2me)x + (d^2 + e^2 - r^2) = 0		now it's clear that it's a quadratic equation
+				// (x - h)^2 + (mx - k)^2 = r^2                      			substitution
+				// (x^2 - 2hx + h^2) + (m^2 * x^2 - 2mkx + k^2) = r^2    		expansion
+				// (m^2 * x^2 + x^2) + (-2hx - 2mkx) + (h^2 + k^2 - r^2) = 0  	let's go ahead and clean that up
+				// (m^2 + 1) * x^2 + (-2h - 2mk)x + (h^2 + k^2 - r^2) = 0		now it's clear that it's a quadratic equation
 				
 				// a = m^2 + 1 			   	m is the slope of the line
-				// b = -2d -2me   			d is x coordinate of circle, e is y coordinate of circle
-				// c = d^2 + e^2 - r^2		r is the radius
+				// b = -2h -2mk   			h is x coordinate of circle, k is y coordinate of circle
+				// c = h^2 + k^2 - r^2		r is the radius
 
 				// this is the slope of the line because the velocity represents the change in position over time
 				var slope = rocketVelocity.y / rocketVelocity.x;
