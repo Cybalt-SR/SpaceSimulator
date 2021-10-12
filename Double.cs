@@ -52,6 +52,10 @@ namespace SpaceSimulation
             var value = new Double2(Double.Lerp(a.x, b.x, t), Double.Lerp(a.y, b.y, t));
             return value;
         }
+        public static Double2 DirFromAngle(double angle)
+        {
+            return new Double2(Math.Cos(angle), Math.Sin(angle));
+        }
 
         public override string ToString()
         {

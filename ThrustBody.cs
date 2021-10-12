@@ -69,7 +69,7 @@ namespace SpaceSimulation
 
             // get total acceleration of craft.
             double accel = SpaceSimulation.exhaustVelo * (SpaceSimulation.fuelBurnRate) * percentage;
-            Double2 dir = current_t_data.Dir; // going against the earth
+            Double2 dir = Double2.DirFromAngle(current_t_data.Angle); //going towards ship direction
             return dir.normalized * accel;
         }
 
