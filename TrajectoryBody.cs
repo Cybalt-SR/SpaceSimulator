@@ -54,8 +54,6 @@ namespace SpaceSimulation
 
         public double GetInterpolatedT(int time, out int index, out int indexnext, bool clamped = false)
         {
-            //time += (int)Math.Round(percentOffset * trajectory.Count * trajectoryResolution);
-
             double accurateindex = ((double)time / trajectoryResolution);
             bool withinClamp = accurateindex < trajectory.Count - 1 && accurateindex > 0;
 
@@ -171,7 +169,7 @@ namespace SpaceSimulation
                 var slope = rocketVelocity.y / rocketVelocity.x;
 
                 var a = Math.Pow(slope, 2) + 1;
-                var b = (-2.0 * relativePlanetPos.x) + (-2.0 * slope * relativePlanetPos.y);
+                var b = (-2.0 * relativePlanetPos.x) - (2.0 * slope * relativePlanetPos.y);
                 var c = Math.Pow(relativePlanetPos.x, 2) + Math.Pow(relativePlanetPos.y, 2) - Math.Pow(planetRadius, 2);
                 var discriminant = (b * b) - (4 * a * c);
 
@@ -179,7 +177,6 @@ namespace SpaceSimulation
                 // discriminant > 0 then there is 2 collisions
                 if (discriminant >= 0)
                 {
-
                     // x sign is used for the directionality of travel of the ship along the slope
                     // x sign is the directionality of travel of the ship along the slope
                     // it allows the code to get the closer intersection
@@ -188,26 +185,26 @@ namespace SpaceSimulation
 
                     // If the root is between the initial position and the final position, then there has been a collision
                     // current position does not need to be checked since this is relative to the origin, 0 < root < finalPosition
-                    if (Math.Abs(root) < Math.Abs(rocketVelocity.x))
+                    if (0 < xsign * root && xsign * root < Math.Abs(rocketVelocity.x))
                     {
                         planetHit = planet; // set planetHit to the current planet
                         intersection = new Double2(root, root * slope); // relative coordinates where the collision takes place
                         break; // exit from running the for loop
                     }
                 }
-
-                if (planetHit != null)
-                {
-                    // position of body now matches with the planet (intersection is relative from rocket)
-                    current_t_data.Pos += intersection;
-                    // velocity of body matches velocity of planet that was hit due to sticky collision
-                    current_t_data.Velocity = planetHit.GetVelocityAtTime(localSecond);
-                }
-                else current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
-
-                if (localSecond % trajectoryResolution == 0) trajectory.Add(current_t_data);
-                localSecond++;
             }
+
+            if (planetHit != null)
+            {
+                // position of body now matches with the planet (intersection is relative from rocket)
+                current_t_data.Pos += intersection;
+                // velocity of body matches velocity of planet that was hit due to sticky collision
+                current_t_data.Velocity = planetHit.GetVelocityAtTime(localSecond);
+            }
+            else current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
+
+            if (localSecond % trajectoryResolution == 0) trajectory.Add(current_t_data);
+            localSecond++;
         }
 
         //forces

@@ -54,7 +54,8 @@ namespace SpaceSimulation
         }
         public static Double2 DirFromAngle(double angle)
         {
-            return new Double2(Math.Cos(angle), Math.Sin(angle));
+            var rad = (angle * Math.PI) / 180.0;
+            return new Double2(Math.Cos(rad), Math.Sin(rad));
         }
 
         public override string ToString()
