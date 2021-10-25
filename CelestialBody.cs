@@ -17,5 +17,10 @@ namespace SpaceSimulation
         public double Longitude_periapsis = 0;
         public double periapsis = 0;
         public double apoapsis = 0;
+
+        protected override double GetLength()
+        {
+            return radius * 2;
+        }
     }
 }
