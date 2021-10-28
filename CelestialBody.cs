@@ -6,9 +6,17 @@ using System.Threading.Tasks;
 
 namespace SpaceSimulation
 {
+	// represents a planet
     [Serializable]
+    public class CelestialBody : TrajectoryBody
+    {
+        public readonly double radius;
 
-    public class CelestialBody : TrajectoryBody {
+        protected override double GetLength()
+        {
+            return radius * 2;
+        }
+
         /// <summary>
         /// Represents a planet
         /// </summary>
@@ -17,7 +25,5 @@ namespace SpaceSimulation
         public CelestialBody(TrajectoryData tdata, double Radius) : base(tdata) {
             radius = Radius;
         }
-
-        public readonly double radius;
     }
 }
