@@ -19,8 +19,8 @@ namespace SpaceSimulation
 
     public class TrajectoryBody
     {
-        public int trajectoryResolution = 3600;
         public List<TrajectoryData> trajectory;
+        public int trajectoryResolution = 3600;
         public double percentOffset;
 
         #region utils
@@ -54,6 +54,11 @@ namespace SpaceSimulation
 
         public double GetInterpolatedT(int time, out int index, out int indexnext, bool clamped = false)
         {
+<<<<<<< HEAD
+=======
+            time += (int)Math.Round(percentOffset * trajectory.Count * trajectoryResolution);
+
+>>>>>>> parent of 6c57a34 (Update TrajectoryBody.cs)
             double accurateindex = ((double)time / trajectoryResolution);
             bool withinClamp = accurateindex < trajectory.Count - 1 && accurateindex > 0;
 
@@ -126,6 +131,7 @@ namespace SpaceSimulation
 
         public void CalculateNext(CelestialBody[] otherObjects)
         {
+            if (localSecond % trajectoryResolution == 0) trajectory.Add(current_t_data);
             var newForce = GetCurrentForces(otherObjects); // get total gravity exerted
             current_t_data.Force = newForce;
             current_t_data.Velocity += current_t_data.Force / current_t_data.mass;
@@ -192,6 +198,7 @@ namespace SpaceSimulation
                         break; // exit from running the for loop
                     }
                 }
+<<<<<<< HEAD
             }
 
             if (planetHit != null)
@@ -200,6 +207,21 @@ namespace SpaceSimulation
                 current_t_data.Pos += intersection;
                 // velocity of body matches velocity of planet that was hit due to sticky collision
                 current_t_data.Velocity = planetHit.GetVelocityAtTime(localSecond);
+=======
+                
+
+                if (planetHit != null)
+                {
+                    // position of body now matches with the planet (intersection is relative from rocket)
+                    current_t_data.Pos += intersection;
+                    // velocity of body matches velocity of planet that was hit due to sticky collision
+                    current_t_data.Velocity = planetHit.GetVelocityAtTime(localSecond);
+                }
+                else current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
+
+                UnityEngine.Debug.Log(localSecond);
+                localSecond++;
+>>>>>>> parent of 6c57a34 (Update TrajectoryBody.cs)
             }
             else current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
 
