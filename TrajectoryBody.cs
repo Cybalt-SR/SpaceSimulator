@@ -19,8 +19,8 @@ namespace SpaceSimulation
 
     public class TrajectoryBody
     {
-        public List<TrajectoryData> trajectory;
         public int trajectoryResolution = 3600;
+        public List<TrajectoryData> trajectory;
         public double percentOffset;
 
         #region utils
@@ -54,12 +54,8 @@ namespace SpaceSimulation
 
         public double GetInterpolatedT(int time, out int index, out int indexnext, bool clamped = false)
         {
-<<<<<<< HEAD
-=======
-            time += (int)Math.Round(percentOffset * trajectory.Count * trajectoryResolution);
-
->>>>>>> parent of 6c57a34 (Update TrajectoryBody.cs)
             double accurateindex = ((double)time / trajectoryResolution);
+            accurateindex += (trajectory.Count * percentOffset);
             bool withinClamp = accurateindex < trajectory.Count - 1 && accurateindex > 0;
 
             if (clamped == false || withinClamp == true)
@@ -104,6 +100,22 @@ namespace SpaceSimulation
 
             return Double2.Lerp(a, b, t);
         }
+        public double GetAngleAtTime(int timeSecond, bool clamped = false)
+        {
+            double t = GetInterpolatedT(timeSecond, out int index, out int nextIndex, clamped);
+            double a = trajectory[index].Angle;
+            double b = trajectory[nextIndex].Angle;
+
+            return Double.Lerp(a, b, t);
+        }
+        public double GetAnglularVelocityAtTime(int timeSecond, bool clamped = false)
+        {
+            double t = GetInterpolatedT(timeSecond, out int index, out int nextIndex, clamped);
+            double a = trajectory[index].AngularVelocity;
+            double b = trajectory[nextIndex].AngularVelocity;
+
+            return Double.Lerp(a, b, t);
+        }
         #endregion
 
         //used for the calculation of force and for variables here to retain throughout calculation
@@ -132,9 +144,14 @@ namespace SpaceSimulation
         public void CalculateNext(CelestialBody[] otherObjects)
         {
             if (localSecond % trajectoryResolution == 0) trajectory.Add(current_t_data);
-            var newForce = GetCurrentForces(otherObjects); // get total gravity exerted
-            current_t_data.Force = newForce;
+
+            //positional physics
+            current_t_data.Force = GetCurrentForces(otherObjects); // get all forces acting upon this object
             current_t_data.Velocity += current_t_data.Force / current_t_data.mass;
+
+            //rotational physics
+            current_t_data.Torque = GetCurrentTorques(otherObjects);
+            current_t_data.AngularVelocity += ConvertTorqueToDegPerSec(current_t_data.Torque, GetLength());
 
             CelestialBody planetHit = null; // planet that body has intersected positions with
             Double2 intersection = Double2.zero; // coordinates relative to the current position to the rocket where an intersection takes place
@@ -198,7 +215,6 @@ namespace SpaceSimulation
                         break; // exit from running the for loop
                     }
                 }
-<<<<<<< HEAD
             }
 
             if (planetHit != null)
@@ -207,25 +223,10 @@ namespace SpaceSimulation
                 current_t_data.Pos += intersection;
                 // velocity of body matches velocity of planet that was hit due to sticky collision
                 current_t_data.Velocity = planetHit.GetVelocityAtTime(localSecond);
-=======
-                
-
-                if (planetHit != null)
-                {
-                    // position of body now matches with the planet (intersection is relative from rocket)
-                    current_t_data.Pos += intersection;
-                    // velocity of body matches velocity of planet that was hit due to sticky collision
-                    current_t_data.Velocity = planetHit.GetVelocityAtTime(localSecond);
-                }
-                else current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
-
-                UnityEngine.Debug.Log(localSecond);
-                localSecond++;
->>>>>>> parent of 6c57a34 (Update TrajectoryBody.cs)
             }
             else current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
-
-            if (localSecond % trajectoryResolution == 0) trajectory.Add(current_t_data);
+            
+            current_t_data.Angle += current_t_data.AngularVelocity; // apply rotation
             localSecond++;
         }
 
@@ -263,6 +264,29 @@ namespace SpaceSimulation
             }
 
             return force;
+        }
+        #endregion
+
+        //forces
+        #region Torques
+        protected virtual double GetLength()
+        {
+            return 0;
+        }
+        // shared between everything that inherits from TracjetoryBody
+        protected virtual double GetCurrentTorques(CelestialBody[] otherObjects)
+        {
+            return 0;
+        }
+        public double ConvertTorqueToDegPerSec(double torque, double length)
+        {
+            // formula for getting the inertia of an object whose pivot is in the center
+            // I = 1/12 * M * L^2
+            double inertia = (Math.Pow(length, 2) * current_t_data.mass) / 12;
+            double angularMomentum = torque / inertia; // this should be in radians / second
+            double result = (angularMomentum / Math.PI) * 180; // convert it to degrees / second
+
+            return result;
         }
         #endregion
     }

@@ -10,6 +10,7 @@ namespace SpaceSimulation
     public class ThrustBody : TrajectoryBody
     {
         public List<Double2> thrustKeys;
+        public List<Double2> angularthrustKeys;
 		public double rocketLength = 0; // length of the rocket in meters
 		// current_t_data is an inherited value from TrajectoryBody
 
@@ -18,23 +19,29 @@ namespace SpaceSimulation
         {
             var newForces = base.GetCurrentForces(otherObjects); // gets gravity of trajectoryBody
             newForces += GetThrust(otherObjects, LerpKeyList(thrustKeys, localSecond)); // add thrust (special to ThrustBodies)
+
             return newForces;
+        }
+
+        protected override double GetCurrentTorques(CelestialBody[] otherObjects)
+        {
+            var newForces = base.GetCurrentTorques(otherObjects);
+            newForces += GetTorque(LerpKeyList(angularthrustKeys, localSecond));
+
+            return newForces;
+        }
+
+        protected override double GetLength()
+        {
+            return rocketLength;
         }
 
         // turning energy should be a negative value if the rocket is turning right
         // in trigonometry clockwise is negative
-        double GetRotationalVelocity(double turningEnergy, double timespan)
+        double GetTorque(double percentage)
         {
-            // formula for getting the inertia of an object whose pivot is in the center
-            // I = 1/12 * M * L^2
-            double inertia = (Math.Pow(rocketLength, 2) * current_t_data.mass) / 12;
-            double torque = turningEnergy * rocketLength / 2; // should be newton-meters
-            double finalMomentum = torque * timespan; // n * m * s
-
-            // initial momentum should be subtracted from this but the rocket has no angular momentum when the turn is started
-            double angularMomentum = finalMomentum / inertia; // this should be in radians / second
-            double result = (angularMomentum / SpaceSimulation.PI) * 180; // convert it to radians / second
-            return result;
+            double torque = (SpaceSimulation.maxTorque * percentage) * rocketLength / 2; // should be newton-meters
+            return torque;
 		}
 
         Double2 GetThrust(CelestialBody[] otherObjects, double percentage)
