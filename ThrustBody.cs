@@ -12,9 +12,22 @@ namespace SpaceSimulation
         public List<Double2> thrustKeys;
         public List<Double2> angularthrustKeys;
 		public double rocketLength = 0; // length of the rocket in meters
-		// current_t_data is an inherited value from TrajectoryBody
 
-		// override the GetCurrentForces method from TrajectoryBody to add thrust in the forces
+        public ThrustBody(
+            TrajectoryData startingData,
+            List<Double2> thrustKeys,
+            List<Double2> angularthrustKeys,
+            double rocketLength
+            ) : base(startingData)
+        {
+            this.thrustKeys = thrustKeys;
+            this.angularthrustKeys = angularthrustKeys;
+            this.rocketLength = rocketLength;
+        }
+
+        // current_t_data is an inherited value from TrajectoryBody
+
+        // override the GetCurrentForces method from TrajectoryBody to add thrust in the forces
         protected override Double2 GetCurrentForces(CelestialBody[] otherObjects)
         {
             var newForces = base.GetCurrentForces(otherObjects); // gets gravity of trajectoryBody

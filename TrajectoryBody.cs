@@ -19,7 +19,7 @@ namespace SpaceSimulation
 
     public class TrajectoryBody
     {
-        public int trajectoryResolution = 3600;
+        public int trajectoryResolution = 1;
         public List<TrajectoryData> trajectory;
         public double percentOffset;
 
@@ -125,20 +125,18 @@ namespace SpaceSimulation
         //cache
         protected int localSecond = 0;
 
-        public void InitCalculation(Double2 position, Double2 startingVelocity, double angle, double startingAngularVelocity)
-        {	
-			// constructs the class (js speak)
+        public TrajectoryBody(TrajectoryData startingData)
+        {
+            InitCalculation(startingData);
+        }
+
+        //this will still exist for reusing of class
+        public void InitCalculation(TrajectoryData startingData)
+        {
             localSecond = 0;
 
             trajectory = new List<TrajectoryData>();
-
-            current_t_data.Pos = position; 
-            current_t_data.Force = Double2.Zero;
-            current_t_data.Velocity = startingVelocity;
-
-            current_t_data.Angle = angle;
-            current_t_data.Torque = 0;
-            current_t_data.AngularVelocity = startingAngularVelocity;
+            current_t_data = startingData;
         }
 
         public void CalculateNext(CelestialBody[] otherObjects)
