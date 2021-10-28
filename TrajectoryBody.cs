@@ -1,26 +1,49 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using static SpaceSimulation.SpaceSimulation;
 
 namespace SpaceSimulation
 {
     [Serializable]
-    public struct TrajectoryData
-    {
-        public double mass;
-        public Double2 Pos;
+
+    public struct TrajectoryData {
         public Double2 Force;
+        public double Torque;
+
+        public readonly double mass;
+        public Double2 Pos;
         public Double2 Velocity;
 
         public double Angle;
-        public double Torque;
         public double AngularVelocity;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="position">Staring position of the object</param>
+        /// <param name="startingVelocity">Starting velocity of the object</param>
+        /// <param name="angle">Starting angle of the object</param>
+        /// <param name="startingAngularVelocity">Starting angular velocity of the object</param>
+        /// <param name="Mass">Mass of the object</param>
+        public TrajectoryData(Double2 position, Double2 startingVelocity, double angle, double startingAngularVelocity, double Mass) {
+            Force = Double2.Zero;
+            Torque = 0;
+
+            mass = Mass;
+            Pos = position;
+            Velocity = startingVelocity;
+            Angle = angle;
+            AngularVelocity = startingAngularVelocity;
+        }
     }
 
     public class TrajectoryBody
     {
-        public int trajectoryResolution = 3600;
-        public List<TrajectoryData> trajectory;
+        public int trajectoryResolution = 1;
+        protected int localSecond = 0;
+        public TrajectoryData current_t_data;
+        public List<TrajectoryData> trajectory = new List<TrajectoryData>();
+
         public double percentOffset;
 
         #region utils
@@ -104,26 +127,11 @@ namespace SpaceSimulation
         #endregion
 
         //used for the calculation of force and for variables here to retain throughout calculation
-        public TrajectoryData current_t_data = new TrajectoryData();
 
-        //Trajectory calculation
-        //cache
-        protected int localSecond = 0;
-
-        public void InitCalculation(Double2 position, Double2 startingVelocity, double angle, double startingAngularVelocity)
-        {	
-			// constructs the class (js speak)
-            localSecond = 0;
-
-            trajectory = new List<TrajectoryData>();
-
-            current_t_data.Pos = position; 
-            current_t_data.Force = Double2.zero;
-            current_t_data.Velocity = startingVelocity;
-
-            current_t_data.Angle = angle;
-            current_t_data.Torque = 0;
-            current_t_data.AngularVelocity = startingAngularVelocity;
+        // Init calculation was replaced with a class constructor that takes in the starting trajectory data
+        public TrajectoryBody(TrajectoryData staringTrajectoryData) {
+            current_t_data = staringTrajectoryData;
+            trajectory.Add(staringTrajectoryData);
         }
 
         public void CalculateNext(CelestialBody[] otherObjects)
@@ -133,7 +141,7 @@ namespace SpaceSimulation
             current_t_data.Velocity += current_t_data.Force / current_t_data.mass;
 
             CelestialBody planetHit = null; // planet that body has intersected positions with
-            Double2 intersection = Double2.zero; // coordinates relative to the current position to the rocket where an intersection takes place
+            Double2 intersection = Double2.Zero; // coordinates relative to the current position to the rocket where an intersection takes place
 
             //check if newPosition is inside planet
             foreach (var planet in otherObjects)
@@ -216,34 +224,45 @@ namespace SpaceSimulation
 		// shared between everything that inherits from TracjetoryBody
         protected virtual Double2 GetCurrentForces(CelestialBody[] otherObjects)
         {
-            var newForce = Double2.zero;
-            newForce += GetGravity(current_t_data.Pos, otherObjects); 
+            var newForce = Double2.Zero;
+            newForce += GetGravity(otherObjects); 
 
             return newForce;
         }
 
-        Double2 GetGravity(Double2 pos, CelestialBody[] gravityHolders)
+        /// <summary>
+        /// Determines the forces of gravity acting on the trajectory body on the horizontal and vertical axis
+        /// </summary>
+        /// <param name="gravityHolders"> List of planets </param>
+        /// <returns></returns>
+        Double2 GetGravity(CelestialBody[] gravityHolders)
         {
-            Double2 force = Double2.zero;
+            Double2 force = Double2.Zero;
 
             foreach (var body in gravityHolders)
             {
                 // loop through gravityHolders then try to get summative total of their forces
-				// determine position of body at given time
-				var bodyPos = body.GetPositionAtTime(localSecond);
+                // determine position of body at given time
+                var bodyPos = body.GetPositionAtTime(localSecond);
+                double rawForce = GetRawForceOfGravity(body, bodyPos);  // how strong the attraction is between planet and body 
 
-                double sqrdist = (pos - bodyPos).sqrmagnitude; // get distance of body to planet
-				// how strong the attraction is between planet and body
-                double rawForce = gconst * (current_t_data.mass * body.current_t_data.mass / sqrdist); //Gravity equation
-
-				// get direction between body and planet through their positions
-                Double2 dir = bodyPos - pos;
-                var possibleNewForce = dir.normalized * rawForce; //combine data of direction and attraction force
+                // get direction between body and planet through their positions
+                Double2 dir = bodyPos - current_t_data.Pos;
+                var possibleNewForce = dir.Normalized * rawForce; //combine data of direction and attraction force
 
                 force += possibleNewForce; // add to summative force
             }
 
             return force;
+        }
+
+        double GetRawForceOfGravity(CelestialBody body, Double2 bodyPos)
+        {
+            // this method returns the raw force of the planet on the body
+            // universal gravity equation = gconst * (m1 * m2 / sqrdist
+            double sqrdist = (current_t_data.Pos - bodyPos).SquareMagnitude;
+            double rawForce = SpaceSimulation.gconst * (body.current_t_data.mass * current_t_data.mass / sqrdist);
+            return rawForce;
         }
         #endregion
     }
