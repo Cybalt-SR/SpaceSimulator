@@ -133,7 +133,7 @@ namespace SpaceSimulation
             trajectory = new List<TrajectoryData>();
 
             current_t_data.Pos = position; 
-            current_t_data.Force = Double2.zero;
+            current_t_data.Force = Double2.Zero;
             current_t_data.Velocity = startingVelocity;
 
             current_t_data.Angle = angle;
@@ -154,7 +154,7 @@ namespace SpaceSimulation
             current_t_data.AngularVelocity += ConvertTorqueToDegPerSec(current_t_data.Torque, GetLength());
 
             CelestialBody planetHit = null; // planet that body has intersected positions with
-            Double2 intersection = Double2.zero; // coordinates relative to the current position to the rocket where an intersection takes place
+            Double2 intersection = Double2.Zero; // coordinates relative to the current position to the rocket where an intersection takes place
 
             //check if newPosition is inside planet
             foreach (var planet in otherObjects)
@@ -236,7 +236,7 @@ namespace SpaceSimulation
 		// shared between everything that inherits from TracjetoryBody
         protected virtual Double2 GetCurrentForces(CelestialBody[] otherObjects)
         {
-            var newForce = Double2.zero;
+            var newForce = Double2.Zero;
             newForce += GetGravity(current_t_data.Pos, otherObjects); 
 
             return newForce;
@@ -244,7 +244,7 @@ namespace SpaceSimulation
 
         Double2 GetGravity(Double2 pos, CelestialBody[] gravityHolders)
         {
-            Double2 force = Double2.zero;
+            Double2 force = Double2.Zero;
 
             foreach (var body in gravityHolders)
             {
@@ -252,13 +252,13 @@ namespace SpaceSimulation
 				// determine position of body at given time
 				var bodyPos = body.GetPositionAtTime(localSecond);
 
-                double sqrdist = (pos - bodyPos).sqrmagnitude; // get distance of body to planet
+                double sqrdist = (pos - bodyPos).SquareMagnitude; // get distance of body to planet
 				// how strong the attraction is between planet and body
                 double rawForce = gconst * (current_t_data.mass * body.current_t_data.mass / sqrdist); //Gravity equation
 
 				// get direction between body and planet through their positions
                 Double2 dir = bodyPos - pos;
-                var possibleNewForce = dir.normalized * rawForce; //combine data of direction and attraction force
+                var possibleNewForce = dir.Normalized * rawForce; //combine data of direction and attraction force
 
                 force += possibleNewForce; // add to summative force
             }

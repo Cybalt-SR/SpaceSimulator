@@ -10,14 +10,6 @@ namespace SpaceSimulation
 	// represents a planet
     public class CelestialBody : TrajectoryBody
     {
-        public double radius = 0;
-        public double eccentricity = 0;
-        public double inclination = 0;
-        public double Longitude_ascendingNode = 0;
-        public double Longitude_periapsis = 0;
-        public double periapsis = 0;
-        public double apoapsis = 0;
-
         protected override double GetLength()
         {
             return radius * 2;
