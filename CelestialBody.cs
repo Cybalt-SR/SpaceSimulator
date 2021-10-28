@@ -22,5 +22,15 @@ namespace SpaceSimulation
         {
             return radius * 2;
         }
+        /// <summary>
+        /// Represents a planet
+        /// </summary>
+        /// <param name="tdata"></param>
+        /// <param name="Radius"></param>
+        public CelestialBody(TrajectoryData tdata, double Radius) : base(tdata) {
+            radius = Radius;
+        }
+
+        public readonly double radius;
     }
 }

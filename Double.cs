@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SpaceSimulation
 {
@@ -8,12 +8,11 @@ namespace SpaceSimulation
         public double x;
         public double y;
 
-        public static Double2 zero => new Double2(0, 0);
-        public static Double2 one => new Double2(1, 1);
-        public static Double2 perpendicular => new Double2(-1, 1);
+        public static Double2 Zero => new Double2(0, 0);
+        public static Double2 One => new Double2(1, 1);
+        public static Double2 Perpendicular => new Double2(-1, 1);
 
-        public Double2(double _x, double _y)
-        {
+        public Double2(double _x, double _y){
             x = _x;
             y = _y;
         }
@@ -23,27 +22,24 @@ namespace SpaceSimulation
         public static Double2 operator *(Double2 a, double b) => new Double2(a.x * b, a.y * b);
         public static Double2 operator /(Double2 a, double b) => new Double2(a.x / b, a.y / b);
 
-        public double sqrmagnitude
-        {
-            get
-            {
+        public double SquareMagnitude{
+            get{
                 return (x * x) + (y * y);
             }
         }
-        public double magnitude
-        {
-            get
-            {
-			// distance between 2 points
-                return Math.Sqrt((x * x) + (y * y));
+        
+        /// <summary>
+        /// The distance of the point from the origin if plotted on a Cartesian plane
+        /// </summary>
+        public double Magnitude {
+            get {
+                return Math.Sqrt(SquareMagnitude);
             }
         }
-        public Double2 normalized
-        {
-            get
-            {
-                var mag = magnitude;
-                return new Double2(x, y) / mag;
+
+        public Double2 Normalized {
+            get {
+                return new Double2(x, y) / Magnitude;
             }
         }
         public static Double2 Lerp(Double2 a , Double2 b, double t)
