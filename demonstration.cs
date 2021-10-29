@@ -5,23 +5,26 @@ using SpaceSimulation;
 namespace ConsoleApp1{
     class Program {
         static void Main(string[] args){
-            double[] keys = { 0.1, 0, 0, 0 };
-            Double2 startingPos = new Double2(0, 50);
-            TrajectoryData startingTrajectoryData = new TrajectoryData(startingPos, Double2.Zero, 45, 0, 10000000000);
-            ThrustBody rocket = new ThrustBody(startingTrajectoryData, 100, convertSimpleKeysToLerpable(keys));
+            double[] keys = { 1, 1, 1, 1, 1, 1, 1 };
+			List<Double2> lerpable = convertSimpleKeysToLerpable(keys);
 
-            double earthMass = 5.972 * Math.Pow(10, 24);
-            TrajectoryData planetTData = new TrajectoryData(Double2.Zero, Double2.Zero, 0, 0, earthMass);
-            CelestialBody earth = new CelestialBody(planetTData, 6371000);
-            CelestialBody[] planets = { earth };
+            Double2 startingPos = new Double2(0, 50); // position of the rocket
+            TrajectoryData startingTrajectoryData = new TrajectoryData(startingPos, Double2.Zero, 45, 0, 10000);
+            ThrustBody rocket = new ThrustBody(startingTrajectoryData, lerpable, 1, 1000, 1000);
 
-            int maxSimTime = keys.Length;
+			Double2 planetStartingPos = new Double2(0, -10000); // position of the planet
+            TrajectoryData planetTData = new TrajectoryData(planetStartingPos, Double2.Zero, 0, 0, 10000);
+            CelestialBody earth = new CelestialBody(planetTData, 500);
+			CelestialBody[] planets = { earth }; // create the planets array with only one planet as the item
+
+            int maxSimTime = keys.Length * 1;
             for (int currentTime = 0; currentTime < maxSimTime; currentTime++) {
                 Console.WriteLine("Currently on iteration: " + currentTime);
                 rocket.CalculateNext(planets);
             }
 
-            Console.WriteLine("Done performing calculations, here is the rocket velocity " + rocket.current_t_data.Velocity);
+            Console.WriteLine("Done performing calculations, here is the rocket position: " + rocket.current_t_data.Pos);
+			Console.WriteLine("Done performing calculations, here is the rocket velocity: " + rocket.current_t_data.Velocity);
         }
 
         static List<Double2> convertSimpleKeysToLerpable(double[] simpleKeys) {
