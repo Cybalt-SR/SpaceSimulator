@@ -10,15 +10,19 @@ namespace SpaceSimulation
     public class ThrustBody : TrajectoryBody
     {
         public readonly List<Double2> thrustKeys;
-	public readonly double rocketLength; // length of the rocket in meters
+		public readonly double rocketLength; // length of the rocket in meters
+		public readonly double exhaustVelo; // Saturn V exhaust velocity 2.40 * 10^3 m/s (Make a method for this later?)
+		public readonly double fuelBurnRate; // Saturn V Fuel burn rate is 1.40 * 10^4 kg/s (This should be a constant since it doesn't change for the entire flight duration)
 
-        public ThrustBody(TrajectoryData tdata, double RocketLength, List<Double2> ThrustKeys): base(tdata) {
+        public ThrustBody(TrajectoryData tdata, List<Double2> ThrustKeys, double RocketLength, double ExhaustVelo = 2400, double FuelBurnRate = 14000): base(tdata) {
             thrustKeys = ThrustKeys;
             rocketLength = RocketLength;
+			exhaustVelo = ExhaustVelo;
+			fuelBurnRate = FuelBurnRate;
         }
 
         // current_t_data is an inherited value from TrajectoryBody
-	// override the GetCurrentForces method from TrajectoryBody to add thrust in the forces
+		// override the GetCurrentForces method from TrajectoryBody to add thrust in the forces
         protected override Double2 GetCurrentForces(CelestialBody[] otherObjects)
         {
             var newForces = base.GetCurrentForces(otherObjects); // gets gravity of trajectoryBody
@@ -56,8 +60,8 @@ namespace SpaceSimulation
             CelestialBody nearest = null; // the nearest planet
             double nearestDist = 0; // distance of the craft to the nearest planet
 
-	    // loop through each planet and try to find the one that is nearest
-	    // which is probably where the spacecraft would be launching from
+	  		// loop through each planet and try to find the one that is nearest
+	    	// which is probably where the spacecraft would be launching from
             foreach (var item in otherObjects){	
 				// distance of spacecraft to item
                 var newDist = (item.GetPositionAtTime(localSecond) - current_t_data.Pos).Magnitude;
@@ -74,9 +78,9 @@ namespace SpaceSimulation
             }
 
             // get total acceleration of craft.
-            double accel = SpaceSimulation.exhaustVelo * (SpaceSimulation.fuelBurnRate) * percentage;
+            double accel = exhaustVelo * fuelBurnRate * percentage;
             Double2 dir = Double2.DirFromAngle(current_t_data.Angle); // take into consideration the current angle of the rocket
-            return dir.Normalized * accel;
+            return dir * accel;
         }
     }
 }

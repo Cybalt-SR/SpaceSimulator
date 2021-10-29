@@ -42,28 +42,33 @@ namespace SpaceSimulation
                 return new Double2(x, y) / Magnitude;
             }
         }
-        public static Double2 Lerp(Double2 a , Double2 b, double t)
-        {
+
+		// applies linear interpolation to the components two Double2 instances
+        public static Double2 Lerp(Double2 a , Double2 b, double t){
 			// perform arithmetic sequence math between values of a and b
             var value = new Double2(Double.Lerp(a.x, b.x, t), Double.Lerp(a.y, b.y, t));
             return value;
         }
-        public static Double2 DirFromAngle(double angle)
-        {
+
+		// creates a Double2 whose components are between 0 and 1
+		// that has a specific angle from the positive x-axis 
+		// when a line is drawn from the origin to its components
+        public static Double2 DirFromAngle(double angle){
             return new Double2(Math.Cos(angle), Math.Sin(angle));
         }
 
-        public override string ToString()
-        {
-            return x + ", " + y;
+		// shows the x and y components in the format of [x, y] fo console debugging
+        public override string ToString(){
+            return "[" + x + ", " + y + "]";
         }
     }
 
-    public struct Double
-    {
-        public static double Lerp(double a, double b, double t)
-        {
-            var value = a + ((b - a) * t); // arithmetic sequence, b - a is common difference, t is iterations, a is a0
+    public struct Double{
+		// Applies linear interpolation to two values where t is the percentile between the two values
+        public static double Lerp(double a, double b, double t){
+			// this is just nice to know, but...
+			// arithmetic sequence, b - a is common difference, t is iterations, a is a0
+            var value = a + ((b - a) * t);
             if (double.IsNaN(value))
                 return a;
             else
