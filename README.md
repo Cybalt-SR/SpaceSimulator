@@ -25,6 +25,9 @@ Written by Gabriel Rayo and Lance Gulinao of Group GUMARATI from STEM-12C of DLS
         -   [Constructor Parameters](#constructor-parameters-3)
         -   [Properties](#properties-4)
         -   [Methods](#methods-3)
+    -   [CelestialBody (class, extends TrajectoryBody)](#celestialbody-class-extends-trajectorybody)
+        -   [Constructor Parameters](#constructor-parameters-4)
+        -   [Properties](#properties-5)
 
 ---
 
@@ -153,19 +156,18 @@ Represents any object in space
 
 ### Constructor Parameters
 
-| Parameter name         | Datatype       | optional | Description                                                       |
-| ---------------------- | -------------- | -------- | ----------------------------------------------------------------- |
-| startingTrajectoryData | TrajectoryData | false    | The initial trajectory data of the trajectoryBody                 |
-| snapshotInterval       | int            | true     | The interval of the trajectoryData snapshots. 1 second by default |
+| Parameter name         | Datatype       | optional | Description                                       |
+| ---------------------- | -------------- | -------- | ------------------------------------------------- |
+| startingTrajectoryData | TrajectoryData | false    | The initial trajectory data of the trajectoryBody |
 
 ### Properties
 
-| Name                  | Datatype               | Description                                                               |
-| --------------------- | ---------------------- | ------------------------------------------------------------------------- |
-| SnapshotInterval      | int                    | The time interval between TrajectoryData snapshots                        |
-| SimulationSecond      | int                    | The time in seconds since the simulation has started                      |
-| TrajectoryList        | List\<TrajectoryData\> | Snapshot of the TrajectoryBody's trajectory based on TrajectoryResolution |
-| CurrentTrajectoryData | TrajectoryData         | The current trajectory data of the body, used as cache for CalculateNext  |
+| Name                      | Datatype               | Description                                                               |
+| ------------------------- | ---------------------- | ------------------------------------------------------------------------- |
+| SnapshotInterval (static) | int                    | The time interval between TrajectoryData snapshots                        |
+| SimulationSecond          | int                    | The time in seconds since the simulation has started                      |
+| TrajectoryList            | List\<TrajectoryData\> | Snapshot of the TrajectoryBody's trajectory based on TrajectoryResolution |
+| CurrentTrajectoryData     | TrajectoryData         | The current trajectory data of the body, used as cache for CalculateNext  |
 
 ### Methods
 
@@ -245,14 +247,13 @@ Represents a rocket
 
 ### Constructor Parameters
 
-| Parameter name         | Datatype        | optional | Description                                                       |
-| ---------------------- | --------------- | -------- | ----------------------------------------------------------------- |
-| startingTrajectoryData | TrajectoryData  | false    | The initial trajectory data of the trajectoryBody                 |
-| ThrustKeys             | List\<Double2\> | false    | List that represents the rocket's thrust levels over time         |
-| RocketLength           | double          | false    | Length of the rocket                                              |
-| ExhaustVelo            | double          | true     | The speed of the rocket's exhaust gases                           |
-| FuelBurnRate           | double          | true     | The rocket's fuel burn rate                                       |
-| snapshotInterval       | int             | true     | The interval of the trajectoryData snapshots. 1 second by default |
+| Parameter name         | Datatype        | optional | Description                                               |
+| ---------------------- | --------------- | -------- | --------------------------------------------------------- |
+| startingTrajectoryData | TrajectoryData  | false    | The initial trajectory data of the thrustBody             |
+| ThrustKeys             | List\<Double2\> | false    | List that represents the rocket's thrust levels over time |
+| RocketLength           | double          | false    | Length of the rocket                                      |
+| ExhaustVelo            | double          | true     | The speed of the rocket's exhaust gases                   |
+| FuelBurnRate           | double          | true     | The rocket's fuel burn rate                               |
 
 ### Properties
 
@@ -291,4 +292,21 @@ returns: the angular velocity in degrees / second
 | otherObjects   | CelestialBody[] | false    | Array of planets, used to determine where the rocket is launching from |
 | percentage     | double          | false    | The thrust level of the rocket                                         |
 
-returns: The change in position of the rocke with its angle taken into account
+returns: The change in position of the rocket with its angle taken into account
+
+## CelestialBody (class, extends TrajectoryBody)
+
+Represents a planet
+
+### Constructor Parameters
+
+| Parameter name         | Datatype       | optional | Description                                      |
+| ---------------------- | -------------- | -------- | ------------------------------------------------ |
+| startingTrajectoryData | TrajectoryData | false    | The initial trajectory data of the celestialBody |
+| radius                 | double         | false    | The radius of the planet                         |
+
+### Properties
+
+| Name   | Datatype | Description              |
+| ------ | -------- | ------------------------ |
+| Radius | double   | The radius of the planet |
