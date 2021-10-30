@@ -23,8 +23,9 @@ namespace ConsoleApp1{
                 rocket.CalculateNext(planets);
             }
 
-            Console.WriteLine("Done performing calculations, here is the rocket position: " + rocket.current_t_data.Pos);
-			Console.WriteLine("Done performing calculations, here is the rocket velocity: " + rocket.current_t_data.Velocity);
+            TrajectoryData CurrentTrajectoryData = rocket.CurrentTrajectoryData;
+            Console.WriteLine("Done performing calculations, here is the rocket position: " + CurrentTrajectoryData.Pos);
+			Console.WriteLine("Done performing calculations, here is the rocket velocity: " + CurrentTrajectoryData.Velocity);
         }
 
         static List<Double2> convertSimpleKeysToLerpable(double[] simpleKeys) {

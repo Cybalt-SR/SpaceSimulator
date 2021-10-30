@@ -12,8 +12,8 @@ namespace SpaceSimulation
         /// <summary>
         /// Represents a planet
         /// </summary>
-        /// <param name="tdata"></param>
-        /// <param name="Radius"></param>
+        /// <param name="tdata"> Starting trajectory data of the planet </param>
+        /// <param name="Radius"> The radius of the planet </param>
         public CelestialBody(TrajectoryData tdata, double Radius) : base(tdata) {
             radius = Radius;
         }

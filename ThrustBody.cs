@@ -14,6 +14,14 @@ namespace SpaceSimulation
 		public readonly double exhaustVelo; // Saturn V exhaust velocity 2.40 * 10^3 m/s (Make a method for this later?)
 		public readonly double fuelBurnRate; // Saturn V Fuel burn rate is 1.40 * 10^4 kg/s (This should be a constant since it doesn't change for the entire flight duration)
 
+        /// <summary>
+        /// Represents a rocket
+        /// </summary>
+        /// <param name="tdata"> Starting trajectoryData of the rocket </param>
+        /// <param name="ThrustKeys"> List that contain keys that represent the rocket's thrust levels over time </param>
+        /// <param name="RocketLength"> Length of the rocket </param>
+        /// <param name="ExhaustVelo"> The velocity of the rocket's exhaust gases </param>
+        /// <param name="FuelBurnRate"> The rocket's fuel burn rate</param>
         public ThrustBody(TrajectoryData tdata, List<Double2> ThrustKeys, double RocketLength, double ExhaustVelo = 2400, double FuelBurnRate = 14000): base(tdata) {
             thrustKeys = ThrustKeys;
             rocketLength = RocketLength;
