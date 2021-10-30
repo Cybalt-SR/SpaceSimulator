@@ -21,6 +21,10 @@ Written by Gabriel Rayo and Lance Gulinao of Group GUMARATI from STEM-12C of DLS
         -   [Constructor Parameters](#constructor-parameters-2)
         -   [Properties](#properties-3)
         -   [Methods](#methods-2)
+    -   [ThrustBody (class, extends TrajectoryBody)](#thrustbody-class-extends-trajectorybody)
+        -   [Constructor Parameters](#constructor-parameters-3)
+        -   [Properties](#properties-4)
+        -   [Methods](#methods-3)
 
 ---
 
@@ -234,3 +238,57 @@ returns: Double2 containing the forces of gravity being applied in the horizonta
 | bodyPos        | Double2       | false    | The position of the body at a given time |
 
 returns: double representing the raw force of gravity between two bodies
+
+## ThrustBody (class, extends TrajectoryBody)
+
+Represents a rocket
+
+### Constructor Parameters
+
+| Parameter name         | Datatype        | optional | Description                                                       |
+| ---------------------- | --------------- | -------- | ----------------------------------------------------------------- |
+| startingTrajectoryData | TrajectoryData  | false    | The initial trajectory data of the trajectoryBody                 |
+| ThrustKeys             | List\<Double2\> | false    | List that represents the rocket's thrust levels over time         |
+| RocketLength           | double          | false    | Length of the rocket                                              |
+| ExhaustVelo            | double          | true     | The speed of the rocket's exhaust gases                           |
+| FuelBurnRate           | double          | true     | The rocket's fuel burn rate                                       |
+| snapshotInterval       | int             | true     | The interval of the trajectoryData snapshots. 1 second by default |
+
+### Properties
+
+| Name         | Datatype        | Description                                               |
+| ------------ | --------------- | --------------------------------------------------------- |
+| thrustKeys   | List\<Double2\> | List that represents the rocket's thrust levels over time |
+| rocketLength | double          | Length of the rocket                                      |
+| exhaustVelo  | double          | The speed of the rocket's exhaust gases                   |
+| fuelBurnRate | double          | The rocket's fuel burn rate                               |
+
+### Methods
+
+**GetCurrentForces** - Calculates the forces being applied on the TrajectoryBody with planets taken into account
+
+This method overrides the GetCurrentForces method and adds thrust
+
+| Parameter name | Datatype        | Optional | Description                                                         |
+| -------------- | --------------- | -------- | ------------------------------------------------------------------- |
+| otherObjects   | CelestialBody[] | false    | Array of celestialObjects (planets) that will be taken into account |
+
+returns: Double2 containing the forces being applied in the horizontal and vertical axis
+
+**GetRotationalVelocity** - calculates the rotational velocity of a rocket initiating a turn
+
+| Parameter name | Datatype | Optional | Description                                                                                                                    |
+| -------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| turningEnergy  | double   | false    | The force exerted on the side of a rocket. Negative values represent a right turn while positive values represent a left turn. |
+| timespan       | double   | false    | The time that a turn takes place                                                                                               |
+
+returns: the angular velocity in degrees / second
+
+**GetThrust** - Computes for the thrust of the rocket
+
+| Parameter name | Datatype        | Optional | Description                                                            |
+| -------------- | --------------- | -------- | ---------------------------------------------------------------------- |
+| otherObjects   | CelestialBody[] | false    | Array of planets, used to determine where the rocket is launching from |
+| percentage     | double          | false    | The thrust level of the rocket                                         |
+
+returns: The change in position of the rocke with its angle taken into account

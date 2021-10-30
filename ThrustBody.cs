@@ -23,7 +23,7 @@ namespace SpaceSimulation
         /// <param name="ExhaustVelo"> Optional: The velocity of the rocket's exhaust gases </param>
         /// <param name="FuelBurnRate"> Optional: The rocket's fuel burn rate</param>
         /// <param name="TrajectoryResolution"> Optional: the interval of the trajectoryData snapshots </param>
-		public ThrustBody(TrajectoryData tdata, List<Double2> ThrustKeys, double RocketLength, double ExhaustVelo = 2400, double FuelBurnRate = 14000, int TrajectoryResolution = 1): base(tdata, TrajectoryResolution) {
+		public ThrustBody(TrajectoryData startingTrajectoryData, List<Double2> ThrustKeys, double RocketLength, double ExhaustVelo = 2400, double FuelBurnRate = 14000, int snapshotInterval = 1): base(startingTrajectoryData, TrajectsnapshotIntervaloryResolution) {
             thrustKeys = ThrustKeys;
             rocketLength = RocketLength;
 			exhaustVelo = ExhaustVelo;
