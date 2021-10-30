@@ -62,8 +62,8 @@ namespace SpaceSimulation
         /// </summary>
         /// <param name="a"> First Double2 instance </param>
         /// <param name="b"> Second Double2 instance </param>
-        /// <param name="t"> double between 0-1 that represents the distance between the components of a and b</param>
-        /// <returns></returns>
+        /// <param name="t"> double between 0-1 that represents the distance between the components of a and b </param>
+        /// <returns> A new double2 instance whose components are lerped from the inputs </returns>
         public static Double2 Lerp(Double2 a , Double2 b, double t){
 			// perform arithmetic sequence math between values of a and b
             var value = new Double2(Double.Lerp(a.x, b.x, t), Double.Lerp(a.y, b.y, t));
@@ -84,19 +84,19 @@ namespace SpaceSimulation
         /// Smoothing / linear interpolation is applied between closest keys if exact time is not available
         /// </summary>
         /// <param name="list"> List of Double2, whose x property is the second and y property is the thrust value </param>
-        /// <param name="t"> The index that will be used to determine the thrust from the list of keys </param>
+        /// <param name="time"> The index that will be used to determine the thrust from the list of keys </param>
         /// <returns> The thrust at a given second </returns>
-        public static double LerpKeyList(List<Double2> list, double t){
+        public static double LerpKeyList(List<Double2> list, double time){
             // init the function with pre and post keys as the first item
 			Double2 preKey = list[0];
             Double2 postKey = preKey;
 
 			// start looping through the list double2
             foreach (var item in list){
-				if (item.x == t){
+				if (item.x == time){
 					// if the item's second is exactly what the user requested then return the thrust
 					return item.y;
-				}else if(item.x < t){
+				}else if(item.x < time){
 					// if the item is before the specified time then set it as preKey
 					preKey = item;
 				}else {
@@ -111,7 +111,7 @@ namespace SpaceSimulation
 			// Double.Lerp(0.40, 0.60, 0.8); // returns 0.56
 
 			// percentile of requested time between closest available keys
-			double normalizedT = (t - preKey.x) / (postKey.x - preKey.x);
+			double normalizedT = (time - preKey.x) / (postKey.x - preKey.x);
 			return Double.Lerp(preKey.y, postKey.y, normalizedT);
         }
 

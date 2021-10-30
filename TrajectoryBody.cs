@@ -69,10 +69,10 @@ namespace SpaceSimulation
         /// </summary>
         /// <param name="time">Simulation time in seconds that will be used to calculate indexes</param>
         /// <param name="index">Output: TrajectoryList index before the specified time</param>
-        /// <param name="indexnext">Output: TrajectoryList index after the specified time</param>
+        /// <param name="nextIndex">Output: TrajectoryList index after the specified time</param>
         /// <param name="clamped">Optional: if true, allows method to sometimes return first and last index</param>
         /// <returns>Lerp percentage</returns>
-        public double GetInterpolatedT(int time, out int index, out int indexnext, bool clamped = false){
+        public double GetInterpolatedT(int time, out int index, out int nextIndex, bool clamped = false){
             //time += (int)Math.Round(percentOffset * trajectory.Count * SnapshotInterval);
 
 			// takes into account SnapshotInterval, 
@@ -87,7 +87,7 @@ namespace SpaceSimulation
 
                 accurateindex %= TrajectoryList.Count; // gets the modulo of accurateIndex
                 index = (int)Math.Floor(accurateindex); // round and cast to int
-                indexnext = (index + 1) % TrajectoryList.Count; // if indexNext is the length of trajectoryArray then loop around to first
+                nextIndex = (index + 1) % TrajectoryList.Count; // if indexNext is the length of trajectoryArray then loop around to first
 
                 double t = accurateindex - index; // percentage / lerp value
                 return t;
@@ -97,12 +97,12 @@ namespace SpaceSimulation
 				if(accurateindex > TrajectoryList.Count - 1){
 					// executed if accurateIndex is greater than the last index of trajectoryCount
                     index = TrajectoryList.Count - 1; // simply returns the last index
-                    indexnext = TrajectoryList.Count - 1;
+                    nextIndex = TrajectoryList.Count - 1;
                     return 1; // the y value of the last index
                 } else {
 					// executed if accurateIndex is 0 of if it is or equal to the last index;
                     index = 0;
-                    indexnext = 0;
+                    nextIndex = 0;
                     return 0; // the y value of the first index
                 }
             }
@@ -138,7 +138,7 @@ namespace SpaceSimulation
         #endregion
 
         /// <summary>
-        /// Calculates the next TrajectoryData and appends it to trajectories arra
+        /// Calculates the next TrajectoryData and appends it to TrajectoryList array
         /// It also performs collision detection to see if the rocket has collided with any planets
         /// </summary>
         /// <param name="otherObjects">Array of celestial objects that will be taken into account</param>

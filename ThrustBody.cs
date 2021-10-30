@@ -55,7 +55,7 @@ namespace SpaceSimulation
 
             // initial momentum should be subtracted from this but the rocket has no angular momentum when the turn is started
             double angularMomentum = finalMomentum / inertia; // this should be in radians / second
-            double result = (angularMomentum / Math.PI) * 180; // convert it to radians / second
+            double result = (angularMomentum / Math.PI) * 180; // convert it to degrees / second
             return result;
 		}
 
@@ -76,11 +76,11 @@ namespace SpaceSimulation
                 var newDist = (item.GetPositionAtTime(localSecond) - current_t_data.Pos).Magnitude;
 
                 if (nearest == null){
-		    // set first item as default
+		   			// set first item as default
                     nearest = item;
                     nearestDist = newDist;
                 }else if (newDist < nearestDist){	
-		    // if newDist is smaller, it is closer, so it becomes new closest planet
+		    		// if newDist is smaller, it is closer, so it becomes new closest planet
                     nearest = item;
                     nearestDist = newDist;
                 }
