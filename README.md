@@ -165,6 +165,12 @@ Represents any object in space
 
 ### Methods
 
+**CalculateNext** - advances the simulation by 1 second and performs collision detection
+
+| Parameter name | Datatype        | Optional | Description                                                         |
+| -------------- | --------------- | -------- | ------------------------------------------------------------------- |
+| otherObjects   | CelestialBody[] | false    | Array of celestialObjects (planets) that will be taken into account |
+
 **GetInterpolatedT** - Determines the lerp percentage and TrajectoryList indexes for a given second in the simulation
 
 | Parameter name | Datatype | Optional | Output | Description                                                                         |
@@ -201,12 +207,6 @@ returns: Double2 of the trajectoryBody position at the requested time
 | timeSecond     | int      | false    | Simulation time in seconds |
 
 returns: Double2 of the trajectoryBody velocity at the requested time
-
-**CalculateNext** - advances the simulation by 1 second and performs collision detection
-
-| Parameter name | Datatype        | Optional | Description                                                         |
-| -------------- | --------------- | -------- | ------------------------------------------------------------------- |
-| otherObjects   | CelestialBody[] | false    | Array of celestialObjects (planets) that will be taken into account |
 
 **GetCurrentForces** - Calculates the forces being applied on the TrajectoryBody with planets taken into account
 
