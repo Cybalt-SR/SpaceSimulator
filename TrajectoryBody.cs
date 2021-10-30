@@ -41,7 +41,7 @@ namespace SpaceSimulation
 			get => localSecond;
 		}
 
-        public readonly int SnapshotInterval; // set this to 1 if in CMD, 3600 in unity
+        public static int SnapshotInterval = 1; // set this to 1 if in CMD, 3600 in unity
         public readonly List<TrajectoryData> TrajectoryList = new List<TrajectoryData>();
            
         // prevent current_t_data from being rewritten outside of TrajectoryBodies / classes that derive from it
@@ -55,9 +55,7 @@ namespace SpaceSimulation
         /// Initiates a trajectoryBody
         /// </summary>
         /// <param name="staringTrajectoryData"> The initial trajectory data of the trajectoryBody </param>
-        /// <param name="snapshotInterval"> Optional: the interval of the trajectoryData snapshots </param>
-        public TrajectoryBody(TrajectoryData staringTrajectoryData, int snapshotInterval = 1) {
-            SnapshotInterval = snapshotInterval;
+        public TrajectoryBody(TrajectoryData staringTrajectoryData) {
             current_t_data = staringTrajectoryData;
             TrajectoryList.Add(staringTrajectoryData);
         }
@@ -153,7 +151,6 @@ namespace SpaceSimulation
             //check if newPosition is inside planet
             foreach (var planet in otherObjects){
                 var absolutePlanetPos = planet.GetPositionAtTime(localSecond); // absolute position of the planet
-                var planetRadius = planet.radius; // radius of the planet
                 var relativePlanetPos = absolutePlanetPos - current_t_data.Pos; // position of planet relative to rocket
                 var rocketVelocity = current_t_data.Velocity; // velocity of the rocket
 
@@ -186,7 +183,7 @@ namespace SpaceSimulation
 
                 var a = Math.Pow(slope, 2) + 1;
                 var b = (-2.0 * relativePlanetPos.x) + (-2.0 * slope * relativePlanetPos.y);
-                var c = Math.Pow(relativePlanetPos.x, 2) + Math.Pow(relativePlanetPos.y, 2) - Math.Pow(planetRadius, 2);
+                var c = Math.Pow(relativePlanetPos.x, 2) + Math.Pow(relativePlanetPos.y, 2) - Math.Pow(planet.Radius, 2);
                 var discriminant = (b * b) - (4 * a * c);
 
                 // discriminant = 0 then there is 1 collision
