@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace SpaceSimulation
 {
@@ -76,6 +77,42 @@ namespace SpaceSimulation
         /// <returns> A Double2 that represents a point that is theta degrees away from the + x-axis </returns>
         public static Double2 DirFromAngle(double angle){
             return new Double2(Math.Cos(angle), Math.Sin(angle));
+        }
+
+		/// <summary>
+        /// Determine the value of angular / linear thrust at a given seocnd
+        /// Smoothing / linear interpolation is applied between closest keys if exact time is not available
+        /// </summary>
+        /// <param name="list"> List of Double2, whose x property is the second and y property is the thrust value </param>
+        /// <param name="t"> The index that will be used to determine the thrust from the list of keys </param>
+        /// <returns> The thrust at a given second </returns>
+        public static double LerpKeyList(List<Double2> list, double t){
+            // init the function with pre and post keys as the first item
+			Double2 preKey = list[0];
+            Double2 postKey = preKey;
+
+			// start looping through the list double2
+            foreach (var item in list){
+				if (item.x == t){
+					// if the item's second is exactly what the user requested then return the thrust
+					return item.y;
+				}else if(item.x < t){
+					// if the item is before the specified time then set it as preKey
+					preKey = item;
+				}else {
+                    postKey = item; // postkey is now the first item whose second is after the requested
+					break; // break out of the foreach after the item's second is past the requested
+				}
+            }
+			
+			// Example:
+			// keys [5, 0.40], [15, 0.60], user wants thrust at 13 seconds
+			// t = 13, preKey.x = 5,  maxT = 10; normalizedT = 0.8;
+			// Double.Lerp(0.40, 0.60, 0.8); // returns 0.56
+
+			// percentile of requested time between closest available keys
+			double normalizedT = (t - preKey.x) / (postKey.x - preKey.x);
+			return Double.Lerp(preKey.y, postKey.y, normalizedT);
         }
 
         /// <summary>

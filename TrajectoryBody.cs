@@ -37,7 +37,11 @@ namespace SpaceSimulation
 
     public class TrajectoryBody {
         protected int localSecond = 0;
-        public readonly int trajectoryResolution; // set this to 1 if in CMD, 3600 in unity
+		public int SimulationSecond {
+			get => localSecond;
+		}
+
+        public readonly int SnapshotInterval; // set this to 1 if in CMD, 3600 in unity
         public readonly List<TrajectoryData> TrajectoryList = new List<TrajectoryData>();
            
         // prevent current_t_data from being rewritten outside of TrajectoryBodies / classes that derive from it
@@ -50,51 +54,15 @@ namespace SpaceSimulation
         /// <summary>
         /// Initiates a trajectoryBody
         /// </summary>
-        /// <param name="staringTrajectoryData">The initial trajectory data of the rocket </param>
-        /// <param name="TrajectoryResolution">Optional: the interval of the trajectoryData snapshots </param>
-        public TrajectoryBody(TrajectoryData staringTrajectoryData, int TrajectoryResolution = 1) {
-            trajectoryResolution = TrajectoryResolution;
+        /// <param name="staringTrajectoryData"> The initial trajectory data of the trajectoryBody </param>
+        /// <param name="snapshotInterval"> Optional: the interval of the trajectoryData snapshots </param>
+        public TrajectoryBody(TrajectoryData staringTrajectoryData, int snapshotInterval = 1) {
+            SnapshotInterval = snapshotInterval;
             current_t_data = staringTrajectoryData;
             TrajectoryList.Add(staringTrajectoryData);
         }
 
         #region utils
-
-        /// <summary>
-        /// Determine the value of angular / linear thrust at a given seocnd
-        /// Smoothing / linear interpolation is applied between closest keys if exact time is not available
-        /// </summary>
-        /// <param name="list"> List of Double2, whose x property is the second and y property is the thrust value </param>
-        /// <param name="t"> The index that will be used to determine the thrust from the list of keys </param>
-        /// <returns> The thrust at a given second </returns>
-        public static double LerpKeyList(List<Double2> list, double t){
-            // init the function with pre and post keys as the first item
-			Double2 preKey = list[0];
-            Double2 postKey = preKey;
-
-			// start looping through the list double2
-            foreach (var item in list){
-				if (item.x == t){
-					// if the item's second is exactly what the user requested then return the thrust
-					return item.y;
-				}else if(item.x < t){
-					// if the item is before the specified time then set it as preKey
-					preKey = item;
-				}else {
-                    postKey = item; // postkey is now the first item whose second is after the requested
-					break; // break out of the foreach after the item's second is past the requested
-				}
-            }
-			
-			// Example:
-			// keys [5, 0.40], [15, 0.60], user wants thrust at 13 seconds
-			// t = 13, preKey.x = 5,  maxT = 10; normalizedT = 0.8;
-			// Double.Lerp(0.40, 0.60, 0.8); // returns 0.56
-
-			// percentile of requested time between closest available keys
-			double normalizedT = (t - preKey.x) / (postKey.x - preKey.x);
-			return Double.Lerp(preKey.y, postKey.y, normalizedT);
-        }
 
         /// <summary>
         /// Determines the lerp percentage and trajectory indexes for a given second in the simulation
@@ -105,10 +73,10 @@ namespace SpaceSimulation
         /// <param name="clamped">Optional: if true, allows method to sometimes return first and last index</param>
         /// <returns>Lerp percentage</returns>
         public double GetInterpolatedT(int time, out int index, out int indexnext, bool clamped = false){
-            //time += (int)Math.Round(percentOffset * trajectory.Count * trajectoryResolution);
+            //time += (int)Math.Round(percentOffset * trajectory.Count * SnapshotInterval);
 
-			// takes into account trajectoryResolution, 
-            double accurateindex = ((double)time / trajectoryResolution);
+			// takes into account SnapshotInterval, 
+            double accurateindex = ((double)time / SnapshotInterval);
 
 			// is true if accurateIndex is between the start and last indices of trajectory
             bool withinClamp = accurateindex < TrajectoryList.Count - 1 && accurateindex > 0;
@@ -250,7 +218,8 @@ namespace SpaceSimulation
                 }
                 else current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
 
-                if (localSecond % trajectoryResolution == 0) TrajectoryList.Add(current_t_data);
+				// only add current_t_data on the interval specified by the user
+                if (localSecond % SnapshotInterval == 0) TrajectoryList.Add(current_t_data);
                 localSecond++;
             }
         }

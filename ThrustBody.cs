@@ -20,9 +20,10 @@ namespace SpaceSimulation
         /// <param name="tdata"> Starting trajectoryData of the rocket </param>
         /// <param name="ThrustKeys"> List that contain keys that represent the rocket's thrust levels over time </param>
         /// <param name="RocketLength"> Length of the rocket </param>
-        /// <param name="ExhaustVelo"> The velocity of the rocket's exhaust gases </param>
-        /// <param name="FuelBurnRate"> The rocket's fuel burn rate</param>
-        public ThrustBody(TrajectoryData tdata, List<Double2> ThrustKeys, double RocketLength, double ExhaustVelo = 2400, double FuelBurnRate = 14000): base(tdata) {
+        /// <param name="ExhaustVelo"> Optional: The velocity of the rocket's exhaust gases </param>
+        /// <param name="FuelBurnRate"> Optional: The rocket's fuel burn rate</param>
+        /// <param name="TrajectoryResolution"> Optional: the interval of the trajectoryData snapshots </param>
+		public ThrustBody(TrajectoryData tdata, List<Double2> ThrustKeys, double RocketLength, double ExhaustVelo = 2400, double FuelBurnRate = 14000, int TrajectoryResolution = 1): base(tdata, TrajectoryResolution) {
             thrustKeys = ThrustKeys;
             rocketLength = RocketLength;
 			exhaustVelo = ExhaustVelo;
@@ -34,7 +35,7 @@ namespace SpaceSimulation
         protected override Double2 GetCurrentForces(CelestialBody[] otherObjects)
         {
             var newForces = base.GetCurrentForces(otherObjects); // gets gravity of trajectoryBody
-            newForces += GetThrust(otherObjects, LerpKeyList(thrustKeys, localSecond)); // add thrust (special to ThrustBodies)
+            newForces += GetThrust(otherObjects, Double2.LerpKeyList(thrustKeys, localSecond)); // add thrust (special to ThrustBodies)
             return newForces;
         }
 
