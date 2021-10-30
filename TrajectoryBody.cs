@@ -8,7 +8,6 @@ namespace SpaceSimulation
 
     public struct TrajectoryData {
         public Double2 Force;
-        public double Torque;
 
         public readonly double mass;
         public Double2 Pos;
@@ -27,7 +26,6 @@ namespace SpaceSimulation
         /// <param name="Mass"> Mass of the object </param>
         public TrajectoryData(Double2 position, Double2 velocity, double angle, double angularVelocity, double Mass) {
             Force = Double2.Zero;
-            Torque = 0;
 
             mass = Mass;
             Pos = position;

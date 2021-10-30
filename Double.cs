@@ -61,7 +61,7 @@ namespace SpaceSimulation
         /// </summary>
         /// <param name="a"> First Double2 instance </param>
         /// <param name="b"> Second Double2 instance </param>
-        /// <param name="t"> double2 between 0-1 that represents the distance between the components of a and b</param>
+        /// <param name="t"> double between 0-1 that represents the distance between the components of a and b</param>
         /// <returns></returns>
         public static Double2 Lerp(Double2 a , Double2 b, double t){
 			// perform arithmetic sequence math between values of a and b
@@ -72,7 +72,7 @@ namespace SpaceSimulation
         /// <summary>
         /// Converts an angle to a Double2 representing the x and y directions whose magnitude is 1
         /// </summary>
-        /// <param name="angle"> The angle in degrees that the point should at from the + x-axis </param>
+        /// <param name="angle"> The angle in degrees that the point should be at from the + x-axis </param>
         /// <returns> A Double2 that represents a point that is theta degrees away from the + x-axis </returns>
         public static Double2 DirFromAngle(double angle){
             return new Double2(Math.Cos(angle), Math.Sin(angle));

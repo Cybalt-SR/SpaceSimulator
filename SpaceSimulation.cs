@@ -7,6 +7,7 @@ namespace SpaceSimulation
     public static class SpaceSimulation
     {
         public static double scale;
-        public const double gconst = 0.000000000066743;
+        public static double gconst = 0.000000000066743;
     }
+
 }
