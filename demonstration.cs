@@ -5,7 +5,7 @@ using SpaceSimulation;
 namespace ConsoleApp1{
     class Program {
         static void Main(string[] args){
-            double[] keys = { 1, 1, 1, 1, 1, 1, 1 };
+            double[] keys = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 };
 			List<Double2> lerpable = convertSimpleKeysToLerpable(keys);
 
             Double2 startingPos = new Double2(0, 50); // position of the rocket
@@ -18,14 +18,16 @@ namespace ConsoleApp1{
 			CelestialBody[] planets = { earth }; // create the planets array with only one planet as the item
 
             int maxSimTime = keys.Length * 1;
-            for (int currentTime = 0; currentTime < maxSimTime; currentTime++) {
+            for (int currentTime = 0; currentTime < maxSimTime + 1; currentTime++) {
                 Console.WriteLine("Currently on iteration: " + currentTime);
+            	
+				TrajectoryData CurrentTrajectoryData = rocket.CurrentTrajectoryData;
+				Console.WriteLine("Rocket velocity: " + CurrentTrajectoryData.Velocity);
+            	Console.WriteLine("Rocket position: " + CurrentTrajectoryData.Pos);
+				Console.WriteLine("");
+				
                 rocket.CalculateNext(planets);
             }
-
-            TrajectoryData CurrentTrajectoryData = rocket.CurrentTrajectoryData;
-            Console.WriteLine("Done performing calculations, here is the rocket position: " + CurrentTrajectoryData.Pos);
-			Console.WriteLine("Done performing calculations, here is the rocket velocity: " + CurrentTrajectoryData.Velocity);
         }
 
         static List<Double2> convertSimpleKeysToLerpable(double[] simpleKeys) {
