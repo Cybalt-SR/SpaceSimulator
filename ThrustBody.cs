@@ -56,7 +56,6 @@ namespace SpaceSimulation
         {
             double torque = (SpaceSimulation.maxTorque * percentage) * rocketLength / 2; // should be newton-meters
             return torque;
-		}
 =======
         public readonly List<Double2> thrustKeys;
 		public readonly double rocketLength; // length of the rocket in meters
@@ -78,7 +77,6 @@ namespace SpaceSimulation
 			fuelBurnRate = FuelBurnRate;
         }
 
-        Double2 GetThrust(CelestialBody[] otherObjects, double percentage)
         // current_t_data is an inherited value from TrajectoryBody
 		// override the GetCurrentForces method from TrajectoryBody to add thrust in the forces
         protected override Double2 GetCurrentForces(CelestialBody[] otherObjects)

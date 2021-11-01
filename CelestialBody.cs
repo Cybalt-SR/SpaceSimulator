@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 ﻿using System;
+=======
+<<<<<<< HEAD
+using System;
+>>>>>>> restructure
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
