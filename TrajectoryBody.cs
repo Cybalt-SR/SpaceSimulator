@@ -1,20 +1,29 @@
 using System;
 using System.Collections.Generic;
 using static SpaceSimulation.SpaceSimulation;
+#if UNITY_EDITOR
+using UnityEngine;
+#endif
 
 namespace SpaceSimulation
 {
     [Serializable]
 
     public struct TrajectoryData {
-        public Double2 Force;
 
-        public readonly double mass;
+#if UNITY_EDITOR
+        [SerializeField]
+#endif
+        private double mass;
+        public double GetMass() => mass;
+
         public Double2 Pos;
         public Double2 Velocity;
+        public Double2 Force;
 
         public double Angle;
         public double AngularVelocity;
+        public double Torque;
 
         /// <summary>
         /// Represents a snapshot of a body's trajectory, such as it's position, velocity
@@ -24,49 +33,65 @@ namespace SpaceSimulation
         /// <param name="angle"> Angle of the object </param>
         /// <param name="angularVelocity"> Angular velocity of the object </param>
         /// <param name="Mass"> Mass of the object </param>
-        public TrajectoryData(Double2 position, Double2 velocity, double angle, double angularVelocity, double Mass) {
-            Force = Double2.Zero;
+        public TrajectoryData(double Mass, Double2 position, Double2 velocity, double angle, double angularVelocity) {
 
             mass = Mass;
+
             Pos = position;
             Velocity = velocity;
+            Force = Double2.Zero;
+
             Angle = angle;
             AngularVelocity = angularVelocity;
+            Torque = 0;
         }
     }
 
-<<<<<<< HEAD
     public class TrajectoryBody
     {
-        public int trajectoryResolution = 1;
-        public List<TrajectoryData> trajectory;
         public double percentOffset;
-=======
-    public class TrajectoryBody {
-        protected int localSecond = 0;
-		public int SimulationSecond {
-			get => localSecond;
-		}
 
-        public static int SnapshotInterval = 1; // set this to 1 if in CMD, 3600 in unity
-        public readonly List<TrajectoryData> TrajectoryList = new List<TrajectoryData>();
-           
+        public int SnapshotInterval = 1; // set this to 1 if in CMD, 3600 in unity
+
+#if UNITY_EDITOR
+        [SerializeField]
+#endif
+        private List<TrajectoryData> TrajectoryList;
+        public List<TrajectoryData> GetTrajectoryList() => TrajectoryList;
+
         // prevent current_t_data from being rewritten outside of TrajectoryBodies / classes that derive from it
-        protected TrajectoryData current_t_data;
+        protected TrajectoryData current_t_data = new TrajectoryData();
         public TrajectoryData CurrentTrajectoryData {
             get => current_t_data;
         }
 
-		// InitCalculation was replaced with a class constructor that takes in the starting trajectory data
+        /// <summary>
+        /// Makes a new trajectory body and initiates it
+        /// </summary>
+        /// <param name="startingTrajectoryData"> The initial trajectory data of the trajectoryBody </param>
+        public TrajectoryBody(TrajectoryData startingTrajectoryData, List<TrajectoryData> Trajectory = null)
+        {
+            if (Trajectory != null)
+                TrajectoryList = Trajectory;
+            else
+                InitCalculation(startingTrajectoryData);
+        }
+
+        //this will still exist for reusing of class
         /// <summary>
         /// Initiates a trajectoryBody
         /// </summary>
         /// <param name="staringTrajectoryData"> The initial trajectory data of the trajectoryBody </param>
-        public TrajectoryBody(TrajectoryData staringTrajectoryData) {
+        public void InitCalculation(TrajectoryData staringTrajectoryData)
+        {
+            localSecond = 0;
+
             current_t_data = staringTrajectoryData;
-            TrajectoryList.Add(staringTrajectoryData);
+            TrajectoryList = new List<TrajectoryData>()
+            {
+                staringTrajectoryData
+            };
         }
->>>>>>> restructure
 
         #region utils
 
@@ -79,46 +104,51 @@ namespace SpaceSimulation
         /// <param name="clamped">Optional: if true, allows method to sometimes return first and last index</param>
         /// <returns>Lerp percentage</returns>
         public double GetInterpolatedT(int time, out int index, out int nextIndex, bool clamped = false){
-            //time += (int)Math.Round(percentOffset * trajectory.Count * SnapshotInterval);
 
-			// takes into account SnapshotInterval, 
-            double accurateindex = ((double)time / SnapshotInterval);
+            if (GetTrajectoryList().Count > 0)
+            {
+                // takes into account SnapshotInterval, 
+                double accurateindex = ((double)time / SnapshotInterval);
 
-<<<<<<< HEAD
-        public double GetInterpolatedT(int time, out int index, out int indexnext, bool clamped = false)
-        {
-            double accurateindex = ((double)time / trajectoryResolution);
-            accurateindex += (trajectory.Count * percentOffset);
-            bool withinClamp = accurateindex < trajectory.Count - 1 && accurateindex > 0;
-=======
-			// is true if accurateIndex is between the start and last indices of trajectory
-            bool withinClamp = accurateindex < TrajectoryList.Count - 1 && accurateindex > 0;
+                accurateindex += (GetTrajectoryList().Count * percentOffset);
+                // is true if accurateIndex is between the start and last indices of trajectory
+                bool withinClamp = accurateindex < GetTrajectoryList().Count - 1 && accurateindex > 0;
 
-            if (clamped == false || withinClamp == true){
-				// this block always gets executed if the user didn't provide clamped parameter / it's false 
-				// or if it's true but accurateIndex was within the start and last indices of trajectory
->>>>>>> restructure
+                if (clamped == false || withinClamp == true)
+                {
+                    // this block always gets executed if the user didn't provide clamped parameter / it's false 
+                    // or if it's true but accurateIndex was within the start and last indices of trajectory
 
-                accurateindex %= TrajectoryList.Count; // gets the modulo of accurateIndex
-                index = (int)Math.Floor(accurateindex); // round and cast to int
-                nextIndex = (index + 1) % TrajectoryList.Count; // if indexNext is the length of trajectoryArray then loop around to first
+                    accurateindex %= GetTrajectoryList().Count; // gets the modulo of accurateIndex
+                    index = (int)Math.Floor(accurateindex); // round and cast to int
+                    nextIndex = (index + 1) % GetTrajectoryList().Count; // if indexNext is the length of trajectoryArray then loop around to first
 
-                double t = accurateindex - index; // percentage / lerp value
-                return t;
-            } else {
-				// this block is executed if clamped == true and accurateIndex is 0 / greater than or equal to the last indice
-				
-				if(accurateindex > TrajectoryList.Count - 1){
-					// executed if accurateIndex is greater than the last index of trajectoryCount
-                    index = TrajectoryList.Count - 1; // simply returns the last index
-                    nextIndex = TrajectoryList.Count - 1;
-                    return 1; // the y value of the last index
-                } else {
-					// executed if accurateIndex is 0 of if it is or equal to the last index;
-                    index = 0;
-                    nextIndex = 0;
-                    return 0; // the y value of the first index
+                    double t = accurateindex - index; // percentage / lerp value
+                    return t;
                 }
+                else
+                {
+                    // this block is executed if clamped == true and accurateIndex is 0 / greater than or equal to the last indice
+
+                    if (accurateindex > GetTrajectoryList().Count - 1)
+                    {
+                        // executed if accurateIndex is greater than the last index of trajectoryCount
+                        index = GetTrajectoryList().Count - 1; // simply returns the last index
+                        nextIndex = GetTrajectoryList().Count - 1;
+                        return 1; // the y value of the last index
+                    }
+                    else
+                    {
+                        // executed if accurateIndex is 0 of if it is or equal to the last index;
+                        index = 0;
+                        nextIndex = 0;
+                        return 0; // the y value of the first index
+                    }
+                }
+            }
+            else
+            {
+                throw new Exception("Unitialized Trajectory");
             }
         }
 
@@ -130,8 +160,8 @@ namespace SpaceSimulation
         /// <returns>The position of the rocket at a given second.</returns>
         public Double2 GetPositionAtTime(int timeSecond, bool clamped = false){
             double t = GetInterpolatedT(timeSecond, out int index, out int nextIndex, clamped);
-            Double2 a = TrajectoryList[index].Pos;
-            Double2 b = TrajectoryList[nextIndex].Pos;
+            Double2 a = GetTrajectoryList()[index].Pos;
+            Double2 b = GetTrajectoryList()[nextIndex].Pos;
 
             return Double2.Lerp(a, b, t);
         }
@@ -144,68 +174,45 @@ namespace SpaceSimulation
         /// <returns>The velocity of the rocket at a given second.</returns>
         public Double2 GetVelocityAtTime(int timeSecond, bool clamped = false){
             double t = GetInterpolatedT(timeSecond, out int index, out int nextIndex, clamped);
-            Double2 a = TrajectoryList[index].Velocity;
-            Double2 b = TrajectoryList[nextIndex].Velocity;
+            Double2 a = GetTrajectoryList()[index].Velocity;
+            Double2 b = GetTrajectoryList()[nextIndex].Velocity;
 
             return Double2.Lerp(a, b, t);
         }
         public double GetAngleAtTime(int timeSecond, bool clamped = false)
         {
             double t = GetInterpolatedT(timeSecond, out int index, out int nextIndex, clamped);
-            double a = trajectory[index].Angle;
-            double b = trajectory[nextIndex].Angle;
+            double a = GetTrajectoryList()[index].Angle;
+            double b = GetTrajectoryList()[nextIndex].Angle;
 
             return Double.Lerp(a, b, t);
         }
         public double GetAnglularVelocityAtTime(int timeSecond, bool clamped = false)
         {
             double t = GetInterpolatedT(timeSecond, out int index, out int nextIndex, clamped);
-            double a = trajectory[index].AngularVelocity;
-            double b = trajectory[nextIndex].AngularVelocity;
+            double a = GetTrajectoryList()[index].AngularVelocity;
+            double b = GetTrajectoryList()[nextIndex].AngularVelocity;
 
             return Double.Lerp(a, b, t);
         }
         #endregion
 
-<<<<<<< HEAD
-        //used for the calculation of force and for variables here to retain throughout calculation
-        public TrajectoryData current_t_data = new TrajectoryData();
-
         //Trajectory calculation
-        //cache
         protected int localSecond = 0;
 
-        public TrajectoryBody(TrajectoryData startingData)
-        {
-            InitCalculation(startingData);
-        }
-
-        //this will still exist for reusing of class
-        public void InitCalculation(TrajectoryData startingData)
-        {
-            localSecond = 0;
-
-            trajectory = new List<TrajectoryData>();
-            current_t_data = startingData;
-        }
-
-        public void CalculateNext(CelestialBody[] otherObjects)
-        {
-            if (localSecond % trajectoryResolution == 0) trajectory.Add(current_t_data);
-
-            //positional physics
-            current_t_data.Force = GetCurrentForces(otherObjects); // get all forces acting upon this object
-=======
         /// <summary>
         /// Calculates the next TrajectoryData and appends it to TrajectoryList array
         /// It also performs collision detection to see if the rocket has collided with any planets
         /// </summary>
         /// <param name="otherObjects">Array of celestial objects that will be taken into account</param>
-        public void CalculateNext(CelestialBody[] otherObjects){
+        public void CalculateNext(CelestialBody[] otherObjects)
+        {
+            if (localSecond % SnapshotInterval == 0) GetTrajectoryList().Add(current_t_data);
+
+            //positional physics
             var newForce = GetCurrentForces(otherObjects); // get total forces exerted on the object
             current_t_data.Force = newForce;
->>>>>>> restructure
-            current_t_data.Velocity += current_t_data.Force / current_t_data.mass;
+            current_t_data.Velocity += current_t_data.Force / current_t_data.GetMass();
 
             //rotational physics
             current_t_data.Torque = GetCurrentTorques(otherObjects);
@@ -248,13 +255,9 @@ namespace SpaceSimulation
                 var slope = rocketVelocity.y / rocketVelocity.x;
 
                 var a = Math.Pow(slope, 2) + 1;
-<<<<<<< HEAD
-                var b = (-2.0 * relativePlanetPos.x) - (2.0 * slope * relativePlanetPos.y);
-                var c = Math.Pow(relativePlanetPos.x, 2) + Math.Pow(relativePlanetPos.y, 2) - Math.Pow(planetRadius, 2);
-=======
                 var b = (-2.0 * relativePlanetPos.x) + (-2.0 * slope * relativePlanetPos.y);
                 var c = Math.Pow(relativePlanetPos.x, 2) + Math.Pow(relativePlanetPos.y, 2) - Math.Pow(planet.Radius, 2);
->>>>>>> restructure
+
                 var discriminant = (b * b) - (4 * a * c);
 
                 // discriminant = 0 then there is 1 collision
@@ -277,14 +280,13 @@ namespace SpaceSimulation
                 }
             }
 
-<<<<<<< HEAD
             if (planetHit != null)
             {
                 // position of body now matches with the planet (intersection is relative from rocket)
                 current_t_data.Pos += intersection;
                 // velocity of body matches velocity of planet that was hit due to sticky collision
                 current_t_data.Velocity = planetHit.GetVelocityAtTime(localSecond);
-=======
+
                 if (planetHit != null)
                 {
                     // position of body now matches with the planet (intersection is relative from rocket)
@@ -295,9 +297,8 @@ namespace SpaceSimulation
                 else current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
 
 				// only add current_t_data on the interval specified by the user
-                if (localSecond % SnapshotInterval == 0) TrajectoryList.Add(current_t_data);
+                if (localSecond % SnapshotInterval == 0) GetTrajectoryList().Add(current_t_data);
                 localSecond++;
->>>>>>> restructure
             }
             else current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
             
@@ -308,13 +309,6 @@ namespace SpaceSimulation
         //forces
         #region Forces
 
-<<<<<<< HEAD
-		// shared between everything that inherits from TracjetoryBody
-        protected virtual Double2 GetCurrentForces(CelestialBody[] otherObjects)
-        {
-            var newForce = Double2.Zero;
-            newForce += GetGravity(current_t_data.Pos, otherObjects); 
-=======
         /// <summary>
         /// Calculates the forces being applied on the TrajectoryBody with planets being taken into account
         /// </summary>
@@ -323,39 +317,21 @@ namespace SpaceSimulation
         protected virtual Double2 GetCurrentForces(CelestialBody[] otherObjects){
             var newForce = Double2.Zero;
             newForce += GetGravity(otherObjects); // everything is affected by gravity
->>>>>>> restructure
 
             return newForce;
         }
 
-<<<<<<< HEAD
-        Double2 GetGravity(Double2 pos, CelestialBody[] gravityHolders)
-        {
-=======
         /// <summary>
         /// Determines the forces of gravity acting on the trajectory body on the horizontal and vertical axis
         /// </summary>
         /// <param name="gravityHolders"> Array of celestial objects that will be taken into account </param>
         /// <returns>The forces of gravity being applied on the rocket on the hroziontal and vertical axi</returns>
         public Double2 GetGravity(CelestialBody[] gravityHolders){
->>>>>>> restructure
             Double2 force = Double2.Zero;
 
             foreach (var body in gravityHolders)
             {
                 // loop through gravityHolders then try to get summative total of their forces
-<<<<<<< HEAD
-				// determine position of body at given time
-				var bodyPos = body.GetPositionAtTime(localSecond);
-
-                double sqrdist = (pos - bodyPos).SquareMagnitude; // get distance of body to planet
-				// how strong the attraction is between planet and body
-                double rawForce = gconst * (current_t_data.mass * body.current_t_data.mass / sqrdist); //Gravity equation
-
-				// get direction between body and planet through their positions
-                Double2 dir = bodyPos - pos;
-                var possibleNewForce = dir.Normalized * rawForce; //combine data of direction and attraction force
-=======
                 // determine position of body at given time
                 var bodyPos = body.GetPositionAtTime(localSecond);
                 double rawForce = GetRawForceOfGravity(body, bodyPos);  // how strong the attraction is between planet and body 
@@ -363,7 +339,6 @@ namespace SpaceSimulation
                 // get direction between body and planet through their positions
                 Double2 dir = bodyPos - current_t_data.Pos;
                 var possibleNewForce = dir.Normalized * rawForce; // combine data of direction and attraction force
->>>>>>> restructure
 
                 force += possibleNewForce; // add to summative force
             }
@@ -382,7 +357,7 @@ namespace SpaceSimulation
             // this method returns the raw force of the planet on the body
             // universal gravity equation = gconst * (m1 * m2 / sqrdist
             double sqrdist = (current_t_data.Pos - bodyPos).SquareMagnitude;
-            double rawForce = SpaceSimulation.gconst * (body.current_t_data.mass * current_t_data.mass / sqrdist);
+            double rawForce = SpaceSimulation.gconst * (body.current_t_data.GetMass() * current_t_data.GetMass() / sqrdist);
             return rawForce;
         }
         #endregion
@@ -402,7 +377,7 @@ namespace SpaceSimulation
         {
             // formula for getting the inertia of an object whose pivot is in the center
             // I = 1/12 * M * L^2
-            double inertia = (Math.Pow(length, 2) * current_t_data.mass) / 12;
+            double inertia = (Math.Pow(length, 2) * current_t_data.GetMass()) / 12;
             double angularMomentum = torque / inertia; // this should be in radians / second
             double result = (angularMomentum / Math.PI) * 180; // convert it to degrees / second
 

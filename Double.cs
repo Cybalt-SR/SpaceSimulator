@@ -69,21 +69,16 @@ namespace SpaceSimulation
             var value = new Double2(Double.Lerp(a.x, b.x, t), Double.Lerp(a.y, b.y, t));
             return value;
         }
-<<<<<<< HEAD
-        public static Double2 DirFromAngle(double angle)
-        {
-            var rad = (angle * Math.PI) / 180.0;
-            return new Double2(Math.Cos(rad), Math.Sin(rad));
-=======
 
         /// <summary>
         /// Converts an angle to a Double2 representing the x and y directions whose magnitude is 1
         /// </summary>
         /// <param name="angle"> The angle in degrees that the point should be at from the + x-axis </param>
         /// <returns> A Double2 that represents a point that is theta degrees away from the + x-axis </returns>
-        public static Double2 DirFromAngle(double angle){
-            return new Double2(Math.Cos(angle), Math.Sin(angle));
->>>>>>> restructure
+        public static Double2 DirFromAngle(double angle)
+        {
+            var rad = (angle * Math.PI) / 180.0;
+            return new Double2(Math.Cos(rad), Math.Sin(rad));
         }
 
 		/// <summary>
