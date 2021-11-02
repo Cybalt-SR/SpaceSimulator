@@ -28,11 +28,11 @@ namespace SpaceSimulation
         /// <summary>
         /// Represents a snapshot of a body's trajectory, such as it's position, velocity
         /// </summary>
+        /// <param name="Mass"> Mass of the object </param>
         /// <param name="position"> Position of the object </param>
         /// <param name="velocity"> Velocity of the object </param>
         /// <param name="angle"> Angle of the object </param>
         /// <param name="angularVelocity"> Angular velocity of the object </param>
-        /// <param name="Mass"> Mass of the object </param>
         public TrajectoryData(double Mass, Double2 position, Double2 velocity, double angle, double angularVelocity)
         {
 
@@ -102,6 +102,23 @@ namespace SpaceSimulation
 
         #region utils
 
+		/// <summary>
+        /// Helper method for GetInterpolatedT to go around Mono's lackluster support for C# 7.0
+		/// sets data and nextData to items from the trajectoryList based on index and nextIndex
+        /// </summary>
+        /// <param name="index">The index for trajectoryData before the time the user requested</param>
+        /// <param name="nextIndex">The index for trajectoryData after the time the user requested</param>
+        /// <param name="data">TrajectoryData *before* the time the user requested</param>
+        /// <param name="nextData">TrajectoryData *after* the time the user requested</param>
+		protected void AssignOutputDatas(int index, int nextIndex, out TrajectoryData data, out TrajectoryData nextData){
+			try{
+				data = GetTrajectoryList()[index];
+				nextData = GetTrajectoryList()[nextIndex];
+			}catch{
+				throw new Exception("invalid indexes " + index + " | " + nextIndex + " for " + name + " (ListCount: " + TrajectoryList.Count + ")");
+			}
+		}
+
         /// <summary>
         /// Determines the lerp percentage and trajectory indexes for a given second in the simulation
         /// </summary>
@@ -118,20 +135,6 @@ namespace SpaceSimulation
                 //indexes to find the trajectory data in the TrajectoryList
                 int index;
                 int nextIndex;
-
-                //local function to easily assign TrajectoryData from the given indexes
-                void AssignOutputDatas(out TrajectoryData _data, out TrajectoryData _nextdata)
-                {
-                    try
-                    {
-                        _data = GetTrajectoryList()[index];
-                        _nextdata = GetTrajectoryList()[nextIndex];
-                    }
-                    catch
-                    {
-                        throw new Exception("invalid indexes " + index + " | " + nextIndex + " for " + name + " (ListCount: " + TrajectoryList.Count + ")");
-                    }
-                }
 
                 // takes into account SnapshotInterval, 
                 double trueIndex = ((double)time / SnapshotInterval);
@@ -151,7 +154,7 @@ namespace SpaceSimulation
 
                     double t = trueIndex - index; // percentage / lerp value
 
-                    AssignOutputDatas(out data, out nextdata);
+                    AssignOutputDatas(index, nextIndex, out data, out nextdata);
                     return t;
                 }
                 else
@@ -164,7 +167,7 @@ namespace SpaceSimulation
                         index = GetTrajectoryList().Count - 1; // simply returns the last index
                         nextIndex = GetTrajectoryList().Count - 1;
 
-                        AssignOutputDatas(out data, out nextdata);
+						AssignOutputDatas(index, nextIndex, out data, out nextdata);
                         return 1; // the y value of the last index
                     }
                     else
@@ -173,7 +176,7 @@ namespace SpaceSimulation
                         index = 0;
                         nextIndex = 0;
 
-                        AssignOutputDatas(out data, out nextdata);
+						AssignOutputDatas(index, nextIndex, out data, out nextdata);
                         return 0; // the y value of the first index
                     }
                 }
