@@ -7,12 +7,13 @@ namespace ConsoleApp1{
 
 #if !UNITY_EDITOR
         static void Main(string[] args){
-            double[] thrustKeys = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 };
-            double[] angleKeys = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+            double[] thrustKeys = { 0, 1, 1, 1, 1 };
+            double[] angularThrustKeys = {0, 0.1, 0.0, -0.2, 0.0};
             // double[] angleKeys = { -0.20, 0.20, -0.40, 0.40, -0.60, 0.60, -0.80, 0.80, -1, 1 };
 			
 			List<Double2> lerpableThrustKeys = convertSimpleKeysToLerpable(thrustKeys);
-			List<Double2> lerpableAngleKeys = convertSimpleKeysToLerpable(angleKeys);
+			List<Double2> lerpableAngleKeys = convertSimpleKeysToLerpable(angularThrustKeys);
 
             Double2 startingPos = new Double2(0, 50); // position of the rocket
             TrajectoryData startingTrajectoryData = new TrajectoryData(10000, startingPos, Double2.Zero, 45, 0);
@@ -30,6 +31,8 @@ namespace ConsoleApp1{
 				TrajectoryData CurrentTrajectoryData = rocket.CurrentTrajectoryData;
 				Console.WriteLine("Rocket velocity: " + CurrentTrajectoryData.Velocity);
             	Console.WriteLine("Rocket position: " + CurrentTrajectoryData.Pos);
+				Console.WriteLine("Rocket angle: " + CurrentTrajectoryData.Angle);
+				Console.WriteLine("Rocket angularVelocity: " + CurrentTrajectoryData.AngularVelocity);
 				Console.WriteLine("");
 				
                 rocket.CalculateNext(planets);

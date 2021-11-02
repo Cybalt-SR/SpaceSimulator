@@ -33,9 +33,11 @@ namespace SpaceSimulation
         /// </summary>
         /// <param name="tdata"> Starting trajectoryData of the rocket </param>
         /// <param name="ThrustKeys"> List that contain keys that represent the rocket's thrust levels over time </param>
+		/// <param name="AngleKeys"> List that contain keys that represent the rocket's angular thrust levels over time </param>
         /// <param name="RocketLength"> Length of the rocket </param>
         /// <param name="ExhaustVelo"> Optional: The velocity of the rocket's exhaust gases </param>
         /// <param name="FuelBurnRate"> Optional: The rocket's fuel burn rate</param>
+		/// <param name="Trajectory"> Optional: A list of the rocket's trajectoryData </param>
 		public ThrustBody(
             TrajectoryData startingTrajectoryData, 
             List<Double2> ThrustKeys,
@@ -96,7 +98,7 @@ namespace SpaceSimulation
         /// <returns> The change in position of the rocket with its angle into account</returns>
         Double2 GetThrust(double percentage)
         {
-            double accel = SpaceSimulation.exhaustVelo * (SpaceSimulation.fuelBurnRate) * percentage;
+            double accel = exhaustVelo * fuelBurnRate * percentage;
             Double2 dir = Double2.DirFromAngle(current_t_data.Angle); //going towards ship direction
             return dir * accel;
         }
