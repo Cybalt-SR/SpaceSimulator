@@ -49,9 +49,14 @@ namespace SpaceSimulation
 
     public class TrajectoryBody
     {
+        public string name;
         public double percentOffset;
 
-        public int SnapshotInterval = 1; // set this to 1 if in CMD, 3600 in unity
+#if UNITY_EDITOR
+        [SerializeField]
+#endif
+        private int SnapshotInterval = 1; // set this to 1 if in CMD, 3600 in unity
+        public int GetSnapshotInterval() => SnapshotInterval;
 
 #if UNITY_EDITOR
         [SerializeField]
