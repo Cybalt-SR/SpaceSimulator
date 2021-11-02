@@ -3,14 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+#if UNITY_EDITOR
+using UnityEngine;
+#endif
 
 namespace SpaceSimulation
 {
     [Serializable]
     public class ThrustBody : TrajectoryBody
     {
-        public readonly List<Double2> angularthrustKeys;
-        public readonly List<Double2> thrustKeys;
+#if UNITY_EDITOR
+        [SerializeField]
+#endif
+        private List<Double2> angularthrustKeys;
+        public List<Double2> GetAngularthrustKeys() => angularthrustKeys;
+
+#if UNITY_EDITOR
+        [SerializeField]
+#endif
+        private List<Double2> thrustKeys;
+        public List<Double2> GetThrustKeys() => thrustKeys;
+
         public readonly double rocketLength; // length of the rocket in meters
         public readonly double exhaustVelo; // Saturn V exhaust velocity 2.40 * 10^3 m/s (Make a method for this later?)
         public readonly double fuelBurnRate; // Saturn V Fuel burn rate is 1.40 * 10^4 kg/s (This should be a constant since it doesn't change for the entire flight duration)
@@ -54,11 +67,17 @@ namespace SpaceSimulation
             var newForces = base.GetCurrentTorques(otherObjects);
             newForces += GetTorque(Double2.LerpKeyList(angularthrustKeys, localSecond));
 
+            if (double.IsNaN(newForces))
+                throw new Exception("NaN torque");
+
             return newForces;
         }
 
         protected override double GetLength()
         {
+            if (rocketLength == 0)
+                throw new Exception("Zero length exception for " + name);
+
             return rocketLength;
         }
 
