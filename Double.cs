@@ -124,6 +124,17 @@ namespace SpaceSimulation
         public override string ToString(){
             return "[" + x + ", " + y + "]";
         }
+
+		public static List<Double2> convertSimpleKeysToLerpable(double[] simpleKeys) {
+            List<Double2> response = new List<Double2>();
+
+            for (int i = 0; i < simpleKeys.Length; i++) {
+                Double2 key = new Double2(i, simpleKeys[i]);
+                response.Add(key);
+            }
+            
+            return response;
+        }
     }
 
     public struct Double{

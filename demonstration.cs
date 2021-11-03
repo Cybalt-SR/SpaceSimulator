@@ -11,9 +11,9 @@ namespace ConsoleApp1{
             double[] thrustKeys = { 0, 1, 1, 1, 1 };
             double[] angularThrustKeys = {0, 0.1, 0.0, -0.2, 0.0};
             // double[] angleKeys = { -0.20, 0.20, -0.40, 0.40, -0.60, 0.60, -0.80, 0.80, -1, 1 };
-			
-			List<Double2> lerpableThrustKeys = convertSimpleKeysToLerpable(thrustKeys);
-			List<Double2> lerpableAngleKeys = convertSimpleKeysToLerpable(angularThrustKeys);
+
+			List<Double2> lerpableThrustKeys = Double2.convertSimpleKeysToLerpable(thrustKeys);
+			List<Double2> lerpableAngleKeys = Double2.convertSimpleKeysToLerpable(angularThrustKeys);
 
             Double2 startingPos = new Double2(0, 50); // position of the rocket
             TrajectoryData startingTrajectoryData = new TrajectoryData(10000, startingPos, Double2.Zero, 45, 0);
@@ -39,16 +39,5 @@ namespace ConsoleApp1{
             }
         }
 # endif
-
-        static List<Double2> convertSimpleKeysToLerpable(double[] simpleKeys) {
-            List<Double2> response = new List<Double2>();
-
-            for (int i = 0; i < simpleKeys.Length; i++) {
-                Double2 key = new Double2(i, simpleKeys[i]);
-                response.Add(key);
-            }
-            
-            return response;
-        }
     }
 }
