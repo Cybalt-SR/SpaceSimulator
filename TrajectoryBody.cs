@@ -155,10 +155,8 @@ namespace SpaceSimulation
         public Double2 GetPositionAtTime(int timeSecond, bool clamped = false)
         {
             double t = GetInterpolatedT(timeSecond, out TrajectoryData data, out TrajectoryData nextdata, clamped);
-
             return Double2.Lerp(data.Pos, nextdata.Pos, t);
         }
-
         /// <summary>
         /// Get the velocity of the rocket at a given second.
         /// Smoothing / linear interpolation is applied if the given second is between the available TrajectoryData
@@ -168,21 +166,51 @@ namespace SpaceSimulation
         public Double2 GetVelocityAtTime(int timeSecond, bool clamped = false)
         {
             double t = GetInterpolatedT(timeSecond, out TrajectoryData data, out TrajectoryData nextdata, clamped);
-
             return Double2.Lerp(data.Velocity, nextdata.Velocity, t);
         }
-
+        /// <summary>
+        /// Get the force of the rocket at a given second.
+        /// Smoothing / linear interpolation is applied if the given second is between the available TrajectoryData
+        /// </summary>
+        /// <param name="timeSecond">Simulation time in seconds</param>
+        /// <returns>The velocity of the rocket at a given second.</returns>
+        public Double2 GetForceAtTime(int timeSecond, bool clamped = false)
+        {
+            double t = GetInterpolatedT(timeSecond, out TrajectoryData data, out TrajectoryData nextdata, clamped);
+            return Double2.Lerp(data.Force, nextdata.Force, t);
+        }
+        /// <summary>
+        /// Get the angle of the rocket at a given second.
+        /// Smoothing / linear interpolation is applied if the given second is between the available TrajectoryData
+        /// </summary>
+        /// <param name="timeSecond">Simulation time in seconds</param>
+        /// <returns>The velocity of the rocket at a given second.</returns>
         public double GetAngleAtTime(int timeSecond, bool clamped = false)
         {
             double t = GetInterpolatedT(timeSecond, out TrajectoryData data, out TrajectoryData nextdata, clamped);
-
             return Double.Lerp(data.Angle, nextdata.Angle, t);
         }
+        /// <summary>
+        /// Get the angular velocity of the rocket at a given second.
+        /// Smoothing / linear interpolation is applied if the given second is between the available TrajectoryData
+        /// </summary>
+        /// <param name="timeSecond">Simulation time in seconds</param>
+        /// <returns>The velocity of the rocket at a given second.</returns>
         public double GetAnglularVelocityAtTime(int timeSecond, bool clamped = false)
         {
             double t = GetInterpolatedT(timeSecond, out TrajectoryData data, out TrajectoryData nextdata, clamped);
-
             return Double.Lerp(data.AngularVelocity, nextdata.AngularVelocity, t);
+        }
+        /// <summary>
+        /// Get the torque of the rocket at a given second.
+        /// Smoothing / linear interpolation is applied if the given second is between the available TrajectoryData
+        /// </summary>
+        /// <param name="timeSecond">Simulation time in seconds</param>
+        /// <returns>The velocity of the rocket at a given second.</returns>
+        public double GetTorqueAtTime(int timeSecond, bool clamped = false)
+        {
+            double t = GetInterpolatedT(timeSecond, out TrajectoryData data, out TrajectoryData nextdata, clamped);
+            return Double.Lerp(data.Torque, nextdata.Torque, t);
         }
         #endregion
 
@@ -196,9 +224,7 @@ namespace SpaceSimulation
         /// <param name="otherObjects">Array of celestial objects that will be taken into account</param>
         public void CalculateNext(CelestialBody[] otherObjects)
         {
-            if (localSecond % SnapshotInterval == 0) GetTrajectoryList().Add(current_t_data);
-
-            if(current_t_data.GetMass() == 0)
+            if (current_t_data.GetMass() == 0)
                 throw new Exception("Zero mass exception for " + name);
 
             //positional physics
@@ -212,6 +238,8 @@ namespace SpaceSimulation
 
             CelestialBody planetHit = null; // planet that body has intersected positions with
             Double2 intersection = Double2.Zero; // coordinates relative to the current position to the rocket where an intersection takes place
+
+            string debugMsg = localSecond + " : ";
 
             //check if newPosition is inside planet
             foreach (var planet in otherObjects)
@@ -257,10 +285,15 @@ namespace SpaceSimulation
                 // discriminant > 0 then there is 2 collisions
                 if (discriminant >= 0)
                 {
+                    debugMsg += "d";
+
                     // x sign is used for the directionality of travel of the ship along the slope
                     // it allows the code to get the closer intersection
                     double xsign = Math.Sign(rocketVelocity.x); // gets the sign of a number, either 1 or -1
                     var root = (-b - (xsign * Math.Sqrt(discriminant))) / (a * 2.0); // relative x coordinate of where collision takes place
+
+                    debugMsg += 0 < xsign * root ? "X" : "";
+                    debugMsg += xsign * root < Math.Abs(rocketVelocity.x) ? "V" : "";
 
                     // If the root is between the initial position and the final position, then there has been a collision
                     // current position does not need to be checked since this is relative to the origin, 0 < root < finalPosition
@@ -271,32 +304,33 @@ namespace SpaceSimulation
                         break; // exit from running the for loop
                     }
                 }
+
+                //Converging collisions seem to escape the collision check above.
+                //A simple distance < radius check will fix this.
+                if(relativePlanetPos.SquareMagnitude < planet.Radius * planet.Radius)
+                {
+                    planetHit = planet;
+
+                    //Converging collisions mostly happen becuase of low angle differences of velocities.
+                    //So unifying velocities is the solution to avoid surface shifting
+                    intersection = planetHit.GetVelocityAtTime(localSecond);
+                }
             }
 
+            Debug.Log(debugMsg + " : " + planetHit?.name);
             if (planetHit != null)
             {
                 // position of body now matches with the planet (intersection is relative from rocket)
                 current_t_data.Pos += intersection;
                 // velocity of body matches velocity of planet that was hit due to sticky collision
                 current_t_data.Velocity = planetHit.GetVelocityAtTime(localSecond);
-
-                if (planetHit != null)
-                {
-                    // position of body now matches with the planet (intersection is relative from rocket)
-                    current_t_data.Pos += intersection;
-                    // velocity of body matches velocity of planet that was hit due to sticky collision
-                    current_t_data.Velocity = planetHit.GetVelocityAtTime(localSecond);
-                }
-                else current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
-
-                // only add current_t_data on the interval specified by the user
-                if (localSecond % SnapshotInterval == 0) GetTrajectoryList().Add(current_t_data);
-                localSecond++;
             }
             else current_t_data.Pos += current_t_data.Velocity; // no collision so continue moving
 
             current_t_data.Angle += current_t_data.AngularVelocity; // apply rotation
             localSecond++;
+
+            if (localSecond % SnapshotInterval == 0) GetTrajectoryList().Add(current_t_data);
         }
 
         //forces
@@ -328,11 +362,10 @@ namespace SpaceSimulation
             {
                 // loop through gravityHolders then try to get summative total of their forces
                 // determine position of body at given time
-                var bodyPos = body.GetPositionAtTime(localSecond);
-                double rawForce = GetRawForceOfGravity(body, bodyPos);  // how strong the attraction is between planet and body 
+                double rawForce = GetRawForceOfGravity(body);  // how strong the attraction is between planet and body 
 
                 // get direction between body and planet through their positions
-                Double2 dir = bodyPos - current_t_data.Pos;
+                Double2 dir = body.GetPositionAtTime(localSecond) - current_t_data.Pos;
                 var possibleNewForce = dir.Normalized * rawForce; // combine data of direction and attraction force
 
                 force += possibleNewForce; // add to summative force
@@ -346,14 +379,16 @@ namespace SpaceSimulation
         /// Does not take into account the direction of force between the bodies
         /// </summary>
         /// <param name="body">A planet</param>
-        /// <param name="bodyPos">The position of the rocket</param>
         /// <returns></returns>
-        public double GetRawForceOfGravity(CelestialBody body, Double2 bodyPos)
+        public double GetRawForceOfGravity(CelestialBody body)
         {
             // this method returns the raw force of the planet on the body
             // universal gravity equation = gconst * (m1 * m2 / sqrdist
-            double sqrdist = (current_t_data.Pos - bodyPos).SquareMagnitude;
-            double rawForce = SpaceSimulation.gconst * (body.current_t_data.GetMass() * current_t_data.GetMass() / sqrdist);
+            double sqrdist = (body.GetPositionAtTime(localSecond) - current_t_data.Pos).SquareMagnitude;
+            if (sqrdist <= 0)
+                throw new Exception("Zero distance exception.");
+
+            double rawForce = SpaceSimulation.gconst * (body.GetTrajectoryList()[0].GetMass() * current_t_data.GetMass() / sqrdist);
             return rawForce;
         }
         #endregion

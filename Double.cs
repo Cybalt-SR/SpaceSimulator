@@ -58,6 +58,17 @@ namespace SpaceSimulation
         }
 
         /// <summary>
+        /// Gets the angle of this vector
+        /// </summary>
+        public double Angle
+        {
+            get
+            {
+                return Math.Atan2(y, x) * Math.PI / 180;
+            }
+        }
+
+        /// <summary>
         /// Applies linear interpolation to the components of two Double2 instances
         /// </summary>
         /// <param name="a"> First Double2 instance </param>
@@ -125,7 +136,25 @@ namespace SpaceSimulation
             return "[" + x + ", " + y + "]";
         }
 
-		public static List<Double2> convertSimpleKeysToLerpable(double[] simpleKeys) {
+        /// <summary>
+        /// Formats the magnitude to a string that has a specified amount of decimal places.
+        /// </summary>
+        /// <returns> "magnitude and direction" </returns>
+        public string MagnitudeSigfig(int sigfig, string unit)
+        {
+            return Double.ToStringSigFig(Magnitude, sigfig) + " " + unit + ", " + (Math.Round(Angle * 1000) / 1000) + "°";
+        }
+
+        /// <summary>
+        /// Formats the value to a string that has a specified amount of decimal places.
+        /// </summary>
+        /// <returns> "formatted [x, y]" </returns>
+        public string ToStringSigFig(int sigfig)
+        {
+            return "[" + Double.ToStringSigFig(x, sigfig) + ", " + Double.ToStringSigFig(y, sigfig) + "]";
+        }
+
+        public static List<Double2> convertSimpleKeysToLerpable(double[] simpleKeys) {
             List<Double2> response = new List<Double2>();
 
             for (int i = 0; i < simpleKeys.Length; i++) {
@@ -153,6 +182,46 @@ namespace SpaceSimulation
                 return a;
             else
                 return value;
+        }
+
+        /// <summary>
+        /// Formats a double to have only one whole number and a specified amount of decimal places
+        /// </summary>
+        /// <param name="sigfig"> number of decimal places </param>
+        /// <param name="shiftAmount"> number of decimal places the the function shifted </param>
+        /// <returns> double </returns>
+        public static double ToSigFigs(double value, int sigfig)
+        {
+            return ToSigFigs(value, sigfig, out _);
+        }
+
+        /// <summary>
+        /// Formats a double to have only one whole number and a specified amount of decimal places
+        /// </summary>
+        /// <param name="sigfig"> number of decimal places </param>
+        /// <param name="shiftAmount"> number of decimal places the the function shifted </param>
+        /// <returns> double </returns>
+        public static double ToSigFigs(double value, int sigfig, out int shiftAmount)
+        {
+            shiftAmount = 0;
+
+            if (value == 0)
+                return 0;
+
+            shiftAmount = (int)Math.Floor(Math.Log10(Math.Abs(value))) + 1;
+            double digits = Math.Pow(10, shiftAmount);
+            return Math.Round((value / digits) * Math.Pow(10, sigfig)) / Math.Pow(10, sigfig);
+        }
+
+        /// <summary>
+        /// Formats a double to have only one whole number and a specified amount of decimal places
+        /// </summary>
+        /// <param name="sigfig"> number of decimal places </param>
+        /// <returns> a formatted string with the e symbol </returns>
+        public static string ToStringSigFig(double value, int sigfig)
+        {
+            var newValue = ToSigFigs(value, sigfig, out int shiftAmount);
+            return newValue + " e" + (shiftAmount >= 0 ? "+" : "-") + shiftAmount;
         }
     }
 }

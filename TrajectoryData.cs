@@ -12,7 +12,13 @@ namespace SpaceSimulation
         [SerializeField]
 #endif
         private double mass;
-        public double GetMass() => mass;
+        public double GetMass()
+        {
+            if (mass <= 0)
+                throw new Exception("Zero mass exception.");
+
+            return mass;
+        }
 
         public Double2 Pos;
         public Double2 Velocity;
