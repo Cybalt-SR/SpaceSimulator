@@ -5,7 +5,7 @@ using SpaceSimulation;
 namespace ConsoleApp1{
     class DemonstrationProgram {
 
-#if !UNITY_EDITOR
+#if !(UNITY_EDITOR || UNITY_STANDALONE)
         static void Main(string[] args){
 
             double[] thrustKeys = { 0, 1, 1, 1, 1 };
