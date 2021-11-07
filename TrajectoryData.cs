@@ -1,5 +1,5 @@
 ﻿using System;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE
 using UnityEngine;
 #endif
 
@@ -8,7 +8,7 @@ namespace SpaceSimulation
     [Serializable]
     public struct TrajectoryData
     {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE
         [SerializeField]
 #endif
         private double mass;

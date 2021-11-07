@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE
 using UnityEngine;
 #endif
 
@@ -12,13 +12,13 @@ namespace SpaceSimulation
         public string name;
         public double percentOffset;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE
         [SerializeField]
 #endif
         private int SnapshotInterval = 1; // set this to 1 if in CMD, 3600 in unity
         public int GetSnapshotInterval() => SnapshotInterval;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE
         [SerializeField]
 #endif
         private List<TrajectoryData> TrajectoryList;
@@ -35,8 +35,10 @@ namespace SpaceSimulation
         /// Makes a new trajectory body and initiates it
         /// </summary>
         /// <param name="startingTrajectoryData"> The initial trajectory data of the trajectoryBody </param>
-        public TrajectoryBody(TrajectoryData startingTrajectoryData, List<TrajectoryData> Trajectory = null)
+        public TrajectoryBody(TrajectoryData startingTrajectoryData, List<TrajectoryData> Trajectory = null, int interval = 1)
         {
+            SnapshotInterval = interval;
+
             if (Trajectory != null)
                 TrajectoryList = Trajectory;
             else
@@ -239,8 +241,6 @@ namespace SpaceSimulation
             CelestialBody planetHit = null; // planet that body has intersected positions with
             Double2 intersection = Double2.Zero; // coordinates relative to the current position to the rocket where an intersection takes place
 
-            string debugMsg = localSecond + " : ";
-
             //check if newPosition is inside planet
             foreach (var planet in otherObjects)
             {
@@ -285,15 +285,10 @@ namespace SpaceSimulation
                 // discriminant > 0 then there is 2 collisions
                 if (discriminant >= 0)
                 {
-                    debugMsg += "d";
-
                     // x sign is used for the directionality of travel of the ship along the slope
                     // it allows the code to get the closer intersection
                     double xsign = Math.Sign(rocketVelocity.x); // gets the sign of a number, either 1 or -1
                     var root = (-b - (xsign * Math.Sqrt(discriminant))) / (a * 2.0); // relative x coordinate of where collision takes place
-
-                    debugMsg += 0 < xsign * root ? "X" : "";
-                    debugMsg += xsign * root < Math.Abs(rocketVelocity.x) ? "V" : "";
 
                     // If the root is between the initial position and the final position, then there has been a collision
                     // current position does not need to be checked since this is relative to the origin, 0 < root < finalPosition
@@ -317,7 +312,6 @@ namespace SpaceSimulation
                 }
             }
 
-            Debug.Log(debugMsg + " : " + planetHit?.name);
             if (planetHit != null)
             {
                 // position of body now matches with the planet (intersection is relative from rocket)

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 namespace SpaceSimulation
 {
     [Serializable]
-
     public class CelestialBody : TrajectoryBody
     {
         public double Radius { get; private set; }
@@ -17,7 +16,7 @@ namespace SpaceSimulation
         /// </summary>
         /// <param name="startingTrajectoryData"> Starting trajectory data of the planet </param>
         /// <param name="radius"> The radius of the planet </param>
-        public CelestialBody(TrajectoryData startingTrajectoryData, double radius, List<TrajectoryData> Trajectory = null) : base(startingTrajectoryData, Trajectory)
+        public CelestialBody(TrajectoryData startingTrajectoryData, double radius, List<TrajectoryData> Trajectory = null, int interval = 1) : base(startingTrajectoryData, Trajectory, interval)
         {
             Radius = radius;
         }

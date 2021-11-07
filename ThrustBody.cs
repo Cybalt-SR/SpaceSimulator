@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE
 using UnityEngine;
 #endif
 
@@ -12,13 +12,13 @@ namespace SpaceSimulation
     [Serializable]
     public class ThrustBody : TrajectoryBody
     {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE
         [SerializeField]
 #endif
         private List<Double2> angularthrustKeys;
         public List<Double2> GetAngularthrustKeys() => angularthrustKeys;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE
         [SerializeField]
 #endif
         private List<Double2> thrustKeys;
@@ -45,8 +45,9 @@ namespace SpaceSimulation
             double RocketLength, 
             double ExhaustVelo = 2400, 
             double FuelBurnRate = 14000,
-            List<TrajectoryData> Trajectory = null
-            ) : base(startingTrajectoryData, Trajectory)
+            List<TrajectoryData> Trajectory = null,
+            int interval = 1
+            ) : base(startingTrajectoryData, Trajectory, interval)
         {
             thrustKeys = ThrustKeys;
             angularthrustKeys = AngleKeys;
