@@ -53,6 +53,34 @@ namespace SpaceSimulation
             fuelBurnRate = FuelBurnRate;
         }
 
+		/// <summary>
+        /// Represents a rocket
+        /// </summary>
+        /// <param name="tdata"> Starting trajectoryData of the rocket </param>
+        /// <param name="ThrustKeys"> List that contain keys that represent the rocket's thrust levels over time </param>
+		/// <param name="AngleKeys"> List that contain keys that represent the rocket's angular thrust levels over time </param>
+        /// <param name="RocketLength"> Length of the rocket </param>
+        /// <param name="ExhaustVelo"> Optional: The velocity of the rocket's exhaust gases </param>
+        /// <param name="FuelBurnRate"> Optional: The rocket's fuel burn rate</param>
+		/// <param name="Trajectory"> Optional: A list of the rocket's trajectoryData </param>
+		public ThrustBody(
+            TrajectoryData startingTrajectoryData, 
+            double[] ThrustKeys,
+            double[] AngleKeys,
+            double RocketLength, 
+            double ExhaustVelo = 2400, 
+            double FuelBurnRate = 14000,
+            List<TrajectoryData> Trajectory = null,
+            int interval = 1
+            ) : base(startingTrajectoryData, Trajectory, interval)
+        {
+            thrustKeys = Double2.convertSimpleKeysToLerpable(ThrustKeys);
+            angularthrustKeys = Double2.convertSimpleKeysToLerpable(AngleKeys);
+            rocketLength = RocketLength;
+            exhaustVelo = ExhaustVelo;
+            fuelBurnRate = FuelBurnRate;
+        }
+
         // current_t_data is an inherited value from TrajectoryBody
         // override the GetCurrentForces method from TrajectoryBody to add thrust in the forces
         protected override Double2 GetCurrentForces(CelestialBody[] otherObjects)
