@@ -63,22 +63,26 @@ namespace SpaceSimulation
 
         #region utils
 
-		/// <summary>
+        /// <summary>
         /// Helper method for GetInterpolatedT to go around Mono's lackluster support for C# 7.0
-		/// sets data and nextData to items from the trajectoryList based on index and nextIndex
+        /// sets data and nextData to items from the trajectoryList based on index and nextIndex
         /// </summary>
         /// <param name="index">The index for trajectoryData before the time the user requested</param>
         /// <param name="nextIndex">The index for trajectoryData after the time the user requested</param>
         /// <param name="data">TrajectoryData *before* the time the user requested</param>
         /// <param name="nextData">TrajectoryData *after* the time the user requested</param>
-		protected void AssignOutputDatas(int index, int nextIndex, out TrajectoryData data, out TrajectoryData nextData){
-			try{
-				data = GetTrajectoryList()[index];
-				nextData = GetTrajectoryList()[nextIndex];
-			}catch{
-				throw new Exception("invalid indexes " + index + " | " + nextIndex + " for " + name + " (ListCount: " + TrajectoryList.Count + ")");
-			}
-		}
+        protected void AssignOutputDatas(int index, int nextIndex, out TrajectoryData data, out TrajectoryData nextData)
+        {
+            try
+            {
+                data = GetTrajectoryList()[index];
+                nextData = GetTrajectoryList()[nextIndex];
+            }
+            catch
+            {
+                throw new Exception("invalid indexes " + index + " | " + nextIndex + " for " + name + " (ListCount: " + TrajectoryList.Count + ")");
+            }
+        }
 
         /// <summary>
         /// Determines the lerp percentage and trajectory indexes for a given second in the simulation
@@ -128,7 +132,7 @@ namespace SpaceSimulation
                         index = GetTrajectoryList().Count - 1; // simply returns the last index
                         nextIndex = GetTrajectoryList().Count - 1;
 
-						AssignOutputDatas(index, nextIndex, out data, out nextdata);
+                        AssignOutputDatas(index, nextIndex, out data, out nextdata);
                         return 1; // the y value of the last index
                     }
                     else
@@ -137,7 +141,7 @@ namespace SpaceSimulation
                         index = 0;
                         nextIndex = 0;
 
-						AssignOutputDatas(index, nextIndex, out data, out nextdata);
+                        AssignOutputDatas(index, nextIndex, out data, out nextdata);
                         return 0; // the y value of the first index
                     }
                 }
@@ -302,7 +306,7 @@ namespace SpaceSimulation
 
                 //Converging collisions seem to escape the collision check above.
                 //A simple distance < radius check will fix this.
-                if(relativePlanetPos.SquareMagnitude < planet.Radius * planet.Radius)
+                if (relativePlanetPos.SquareMagnitude < planet.Radius * planet.Radius)
                 {
                     planetHit = planet;
 

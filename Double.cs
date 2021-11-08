@@ -19,7 +19,8 @@ namespace SpaceSimulation
         /// </summary>
         /// <param name="_x"> The x component of the Double2 </param>
         /// <param name="_y"> The y component of the Double2 </param>
-        public Double2(double _x, double _y){
+        public Double2(double _x, double _y)
+        {
             x = _x;
             y = _y;
         }
@@ -32,27 +33,33 @@ namespace SpaceSimulation
         /// <summary>
         /// The sum of the squares of the components
         /// </summary>
-        public double SquareMagnitude{
-            get{
+        public double SquareMagnitude
+        {
+            get
+            {
                 return (x * x) + (y * y);
             }
         }
-        
+
         /// <summary>
         /// Total displacement of the horizontal and vertical components
         /// The square root of the sum of the squares of the components
         /// </summary>
-        public double Magnitude {
-            get {
+        public double Magnitude
+        {
+            get
+            {
                 return Math.Sqrt(SquareMagnitude);
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Divides the components of the Double2 by their magnitude
         /// </summary>
-        public Double2 Normalized {
-            get {
+        public Double2 Normalized
+        {
+            get
+            {
                 return new Double2(x, y) / Magnitude;
             }
         }
@@ -75,8 +82,9 @@ namespace SpaceSimulation
         /// <param name="b"> Second Double2 instance </param>
         /// <param name="t"> double between 0-1 that represents the distance between the components of a and b </param>
         /// <returns> A new double2 instance whose components are lerped from the inputs </returns>
-        public static Double2 Lerp(Double2 a , Double2 b, double t){
-			// perform arithmetic sequence math between values of a and b
+        public static Double2 Lerp(Double2 a, Double2 b, double t)
+        {
+            // perform arithmetic sequence math between values of a and b
             var value = new Double2(Double.Lerp(a.x, b.x, t), Double.Lerp(a.y, b.y, t));
             return value;
         }
@@ -92,47 +100,55 @@ namespace SpaceSimulation
             return new Double2(Math.Cos(rad), Math.Sin(rad));
         }
 
-		/// <summary>
+        /// <summary>
         /// Determine the value of angular / linear thrust at a given seocnd
         /// Smoothing / linear interpolation is applied between closest keys if exact time is not available
         /// </summary>
         /// <param name="list"> List of Double2, whose x property is the second and y property is the thrust value </param>
         /// <param name="time"> The index that will be used to determine the thrust from the list of keys </param>
         /// <returns> The thrust at a given second </returns>
-        public static double LerpKeyList(List<Double2> list, double time){
+        public static double LerpKeyList(List<Double2> list, double time)
+        {
             // init the function with pre and post keys as the first item
-			Double2 preKey = list[0];
+            Double2 preKey = list[0];
             Double2 postKey = preKey;
 
-			// start looping through the list double2
-            foreach (var item in list){
-				if (item.x == time){
-					// if the item's second is exactly what the user requested then return the thrust
-					return item.y;
-				}else if(item.x < time){
-					// if the item is before the specified time then set it as preKey
-					preKey = item;
-				}else {
+            // start looping through the list double2
+            foreach (var item in list)
+            {
+                if (item.x == time)
+                {
+                    // if the item's second is exactly what the user requested then return the thrust
+                    return item.y;
+                }
+                else if (item.x < time)
+                {
+                    // if the item is before the specified time then set it as preKey
+                    preKey = item;
+                }
+                else
+                {
                     postKey = item; // postkey is now the first item whose second is after the requested
-					break; // break out of the foreach after the item's second is past the requested
-				}
+                    break; // break out of the foreach after the item's second is past the requested
+                }
             }
-			
-			// Example:
-			// keys [5, 0.40], [15, 0.60], user wants thrust at 13 seconds
-			// t = 13, preKey.x = 5,  maxT = 10; normalizedT = 0.8;
-			// Double.Lerp(0.40, 0.60, 0.8); // returns 0.56
 
-			// percentile of requested time between closest available keys
-			double normalizedT = (time - preKey.x) / (postKey.x - preKey.x);
-			return Double.Lerp(preKey.y, postKey.y, normalizedT);
+            // Example:
+            // keys [5, 0.40], [15, 0.60], user wants thrust at 13 seconds
+            // t = 13, preKey.x = 5,  maxT = 10; normalizedT = 0.8;
+            // Double.Lerp(0.40, 0.60, 0.8); // returns 0.56
+
+            // percentile of requested time between closest available keys
+            double normalizedT = (time - preKey.x) / (postKey.x - preKey.x);
+            return Double.Lerp(preKey.y, postKey.y, normalizedT);
         }
 
         /// <summary>
         /// Shows the x and y components in a better format for console debugging
         /// </summary>
         /// <returns> "[x, y]" </returns>
-        public override string ToString(){
+        public override string ToString()
+        {
             return "[" + x + ", " + y + "]";
         }
 
@@ -154,19 +170,22 @@ namespace SpaceSimulation
             return "[" + Double.ToStringSigFig(x, sigfig) + ", " + Double.ToStringSigFig(y, sigfig) + "]";
         }
 
-        public static List<Double2> convertSimpleKeysToLerpable(double[] simpleKeys) {
+        public static List<Double2> convertSimpleKeysToLerpable(double[] simpleKeys)
+        {
             List<Double2> response = new List<Double2>();
 
-            for (int i = 0; i < simpleKeys.Length; i++) {
+            for (int i = 0; i < simpleKeys.Length; i++)
+            {
                 Double2 key = new Double2(i, simpleKeys[i]);
                 response.Add(key);
             }
-            
+
             return response;
         }
     }
 
-    public struct Double{
+    public struct Double
+    {
         /// <summary>
         /// Applies linear interpolation between two doubles
         /// </summary>
@@ -174,9 +193,10 @@ namespace SpaceSimulation
         /// <param name="b"> Second double </param>
         /// <param name="t"> double between 0-1 that represents the distance between a and b </param>
         /// <returns> double that is t% of the way between a and b </returns>
-        public static double Lerp(double a, double b, double t){
-			// this is just nice to know, but...
-			// arithmetic sequence, b - a is common difference, t is iterations, a is a0
+        public static double Lerp(double a, double b, double t)
+        {
+            // this is just nice to know, but...
+            // arithmetic sequence, b - a is common difference, t is iterations, a is a0
             var value = a + ((b - a) * t);
             if (double.IsNaN(value))
                 return a;

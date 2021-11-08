@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UnityEngine;
 #endif
@@ -39,11 +36,11 @@ namespace SpaceSimulation
         /// <param name="FuelBurnRate"> Optional: The rocket's fuel burn rate</param>
 		/// <param name="Trajectory"> Optional: A list of the rocket's trajectoryData </param>
 		public ThrustBody(
-            TrajectoryData startingTrajectoryData, 
+            TrajectoryData startingTrajectoryData,
             List<Double2> ThrustKeys,
             List<Double2> AngleKeys,
-            double RocketLength, 
-            double ExhaustVelo = 2400, 
+            double RocketLength,
+            double ExhaustVelo = 2400,
             double FuelBurnRate = 14000,
             List<TrajectoryData> Trajectory = null,
             int interval = 1

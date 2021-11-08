@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using SpaceSimulation;
-
-namespace ConsoleApp1{
-    class DemonstrationProgram {
+namespace ConsoleApp1
+{
+    class DemonstrationProgram
+    {
 
 #if !(UNITY_EDITOR || UNITY_STANDALONE)
         static void Main(string[] args){
