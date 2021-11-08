@@ -296,7 +296,7 @@ namespace SpaceSimulation
 
                     // If the root is between the initial position and the final position, then there has been a collision
                     // current position does not need to be checked since this is relative to the origin, 0 < root < finalPosition
-                    if (0 < xsign * root && xsign * root < Math.Abs(rocketVelocity.x))
+                    if (0 <= xsign * root && xsign * root < Math.Abs(rocketVelocity.x))
                     {
                         planetHit = planet; // set planetHit to the current planet
                         intersection = new Double2(root, root * slope); // relative coordinates where the collision takes place
