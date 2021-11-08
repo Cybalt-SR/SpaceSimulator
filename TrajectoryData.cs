@@ -48,5 +48,16 @@ namespace SpaceSimulation
             AngularVelocity = angularVelocity;
             Torque = 0;
         }
+
+#if !(UNITY_EDITOR || UNITY_STANDALONE)
+		public void PrintToConsole(){
+			Console.WriteLine("Velocity: " + Velocity);
+            Console.WriteLine("Position: " + Pos);
+			Console.WriteLine("Angle: " + Angle);
+			Console.WriteLine("AngularVelocity: " + AngularVelocity);
+			Console.WriteLine("");
+		}
+#endif
+
     }
 }
