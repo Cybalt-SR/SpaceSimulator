@@ -12,12 +12,9 @@ namespace ConsoleApp1{
             double[] angularThrustKeys = {0, 0.1, 0.0, -0.2, 0.0};
             // double[] angleKeys = { -0.20, 0.20, -0.40, 0.40, -0.60, 0.60, -0.80, 0.80, -1, 1 };
 
-			List<Double2> lerpableThrustKeys = Double2.convertSimpleKeysToLerpable(thrustKeys);
-			List<Double2> lerpableAngleKeys = Double2.convertSimpleKeysToLerpable(angularThrustKeys);
-
             Double2 startingPos = new Double2(0, 50); // position of the rocket
             TrajectoryData startingTrajectoryData = new TrajectoryData(10000, startingPos, Double2.Zero, 45, 0);
-            ThrustBody rocket = new ThrustBody(startingTrajectoryData, lerpableThrustKeys, lerpableAngleKeys, 1, 1000, 1000);
+            ThrustBody rocket = new ThrustBody(startingTrajectoryData, thrustKeys, angularThrustKeys, 1, 1000, 1000);
 
 			Double2 planetStartingPos = new Double2(0, -10000); // position of the planet
             TrajectoryData planetTData = new TrajectoryData(10000, planetStartingPos, Double2.Zero, 0, 0);
