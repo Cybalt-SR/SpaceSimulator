@@ -77,7 +77,7 @@ ThrustBody rocket = new ThrustBody(
 	angularThrustKeys,
 	rocketLength,			// rocket length in meters
 	exhaustVelocity,		// rocket exhaust velocity in m/s
-	fuelBurnRate,			// rocket fuel burn rate in kg/s
+	fuelBurnRate			// rocket fuel burn rate in kg/s
 )
 ```
 
