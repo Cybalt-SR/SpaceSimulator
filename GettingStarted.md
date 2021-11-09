@@ -87,7 +87,6 @@ Once we have created a rocket and the planets that are included in our simulatio
 
 ```cs
 for(int currentTime = 0; currentTime < thrustKeys.Length; current++){
-
 	// print what iteration it is currently calculating for
 	Console.WriteLine("Currently on iteration: " + currentTime);
 
