@@ -1,12 +1,12 @@
 # Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [Getting Started](#getting-started)
-- [Working with the Library](#working-with-the-library)
-	- [Creating initial trajectory data](#creating-initial-trajectory-data)
-	- [Creating planets](#creating-planets)
-	- [Creating rockets](#creating-rockets)
-	- [The actual calculation](#the-actual-calculation)
+-   [Table of Contents](#table-of-contents)
+-   [Getting Started](#getting-started)
+-   [Working with the Library](#working-with-the-library)
+    -   [Creating initial trajectory data](#creating-initial-trajectory-data)
+    -   [Creating planets](#creating-planets)
+    -   [Creating rockets](#creating-rockets)
+    -   [The actual calculation](#the-actual-calculation)
 
 # Getting Started
 
@@ -32,11 +32,11 @@ Double2 startingPos = new Double2(50, 50);
 Double2 startingVelocity = new Double2(0, 0);
 
 TrajectoryData initialTrajectory = new TrajectoryData(
-	mass, 					// mass of the object in kg
-	startingPos, 			// a Double2 of the object's position
-	startingVelcoity, 		// a Double2 of the object's velocity
-	startingAngle,  		// angle of the object in degrees
-	startingAngularVelocity // angle of the object in degrees/second
+	mass,					// mass of the object in kg
+	startingPos,			// a Double2 of the object's position
+	startingVelcoity,		// a Double2 of the object's velocity
+	startingAngle,			// angle of the object in degrees
+	startingAngularVelocity	// angle of the object in degrees/second
 );
 ```
 
@@ -48,8 +48,8 @@ We can then use the initial trajectory in creating planets:
 
 ```cs
 CelestialBody earth = new CelestialBody(
-	earthInitialTrajectory, // the initial trajectory of earth
-	earthRadius // the radius of earth
+	earthInitialTrajectory,	// the initial trajectory of earth
+	earthRadius				// the radius of earth
 );
 
 // you can repeat the above code for as many planets as you want
