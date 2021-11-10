@@ -4,30 +4,32 @@ A classical mechanics code library written in C# for calculating gravity, laws o
 
 Written by Gabriel Rayo and Lance Gulinao of Group GUMARATI from STEM-12C of DLSU-IS Laguna
 
--   [SpaceSimulator](#spacesimulator)
--   [Documentation](#documentation)
-    -   [Double2 (struct)](#double2-struct)
-        -   [Constructor Parameters](#constructor-parameters)
-        -   [Properties](#properties)
-        -   [Methods](#methods)
-    -   [Double (struct)](#double-struct)
-        -   [Methods](#methods-1)
-    -   [SpaceSimulation (static class)](#spacesimulation-static-class)
-        -   [Properties](#properties-1)
-    -   [TrajectoryData (struct)](#trajectorydata-struct)
-        -   [Constructor Parameters](#constructor-parameters-1)
-        -   [Properties](#properties-2)
-    -   [TrajectoryBody (class)](#trajectorybody-class)
-        -   [Constructor Parameters](#constructor-parameters-2)
-        -   [Properties](#properties-3)
-        -   [Methods](#methods-2)
-    -   [ThrustBody (class, extends TrajectoryBody)](#thrustbody-class-extends-trajectorybody)
-        -   [Constructor Parameters](#constructor-parameters-3)
-        -   [Properties](#properties-4)
-        -   [Methods](#methods-3)
-    -   [CelestialBody (class, extends TrajectoryBody)](#celestialbody-class-extends-trajectorybody)
-        -   [Constructor Parameters](#constructor-parameters-4)
-        -   [Properties](#properties-5)
+- [SpaceSimulator](#spacesimulator)
+- [Documentation](#documentation)
+	- [Double2 (struct)](#double2-struct)
+		- [Constructor Parameters](#constructor-parameters)
+		- [Properties](#properties)
+		- [Methods](#methods)
+	- [Double (struct)](#double-struct)
+		- [Methods](#methods-1)
+	- [SpaceSimulation (static class)](#spacesimulation-static-class)
+		- [Properties](#properties-1)
+	- [TrajectoryData (struct)](#trajectorydata-struct)
+		- [Constructor Parameters](#constructor-parameters-1)
+		- [Properties](#properties-2)
+		- [Methods](#methods-2)
+	- [TrajectoryBody (class)](#trajectorybody-class)
+		- [Constructor Parameters](#constructor-parameters-2)
+		- [Properties](#properties-3)
+		- [Methods](#methods-3)
+	- [ThrustBody (class, extends TrajectoryBody)](#thrustbody-class-extends-trajectorybody)
+		- [Constructor Parameters](#constructor-parameters-3)
+		- [Properties](#properties-4)
+		- [Methods](#methods-4)
+	- [CelestialBody (class, extends TrajectoryBody)](#celestialbody-class-extends-trajectorybody)
+		- [Constructor Parameters](#constructor-parameters-4)
+		- [Properties](#properties-5)
+		- [Methods](#methods-5)
 
 ---
 
@@ -39,10 +41,10 @@ The library stores positional data, velocity, forces using Double2, a datatype w
 
 ### Constructor Parameters
 
-| Parameter name | Datatype | optional | Description                     |
-| -------------- | -------- | -------- | ------------------------------- |
-| \_x            | double   | false    | the x component of the instance |
-| \_y            | double   | false    | the y component of the instance |
+| Parameter | Datatype | optional | Description                     |
+| --------- | -------- | -------- | ------------------------------- |
+| \_x       | double   | false    | the x component of the instance |
+| \_y       | double   | false    | the y component of the instance |
 
 ### Properties
 
@@ -54,35 +56,36 @@ The library stores positional data, velocity, forces using Double2, a datatype w
 | x                          | double   | the x component of the instance                            |
 | y                          | double   | the y component of the instance                            |
 | SquareMagnitude            | double   | the sum of the squares of the x and y components           |
-| Magnitude                  | double   | Total displacement of the x and y components               |
-| Normalized                 | Double2  | The components of the Double2 divided by their magnitude   |
+| Magnitude                  | double   | total displacement of the x and y components               |
+| Normalized                 | Double2  | the components converted to values between 0 and 1         |
+| Angle                      | double   | the angle of the vector from the positive x-axis           |
 
 ### Methods
 
 **Lerp (static)** - applies linear interpolation to the components of two Double2 instances
 
-| Parameter name | Datatype | optional | Description                                                                           |
-| -------------- | -------- | -------- | ------------------------------------------------------------------------------------- |
-| a              | double2  | false    | First dobule2 instance                                                                |
-| b              | double2  | false    | Second dobule2 instance                                                               |
-| t              | double   | false    | Percentage between 0-1 that represents the distance between the components of a and b |
+| Parameter | Datatype | optional | Description                                                                           |
+| --------- | -------- | -------- | ------------------------------------------------------------------------------------- |
+| a         | double2  | false    | First dobule2 instance                                                                |
+| b         | double2  | false    | Second dobule2 instance                                                               |
+| t         | double   | false    | Percentage between 0-1 that represents the distance between the components of a and b |
 
 returns: A new Double2 instance whose components are lerped from the inputs
 
 **DirFromAngle (static)** - Converts an angle theta to a Double2 representing the x and y directions
 
-| Parameter name | Datatype | optional | Description                                                       |
-| -------------- | -------- | -------- | ----------------------------------------------------------------- |
-| angle          | double   | false    | The angle in degrees that the point should be at from the +x-axis |
+| Parameter | Datatype | optional | Description                                                       |
+| --------- | -------- | -------- | ----------------------------------------------------------------- |
+| angle     | double   | false    | The angle in degrees that the point should be at from the +x-axis |
 
 returns: A Double2 that represents a point that is theta degrees away from the +x-axis
 
 **LerpKeyList (static)** - Applies linear interpolation to an array of Double2 and returns the y component
 
-| Parameter name | Datatype        | optional | Description                                                               |
-| -------------- | --------------- | -------- | ------------------------------------------------------------------------- |
-| list           | List\<Double2\> | false    | List of Double2, where x is the second and y is a percentage              |
-| time           | double          | false    | The index that will be used to determine the thrust from the list of keys |
+| Parameter | Datatype        | optional | Description                                                               |
+| --------- | --------------- | -------- | ------------------------------------------------------------------------- |
+| list      | List\<Double2\> | false    | List of Double2, where x is the second and y is a percentage              |
+| time      | double          | false    | The index that will be used to determine the thrust from the list of keys |
 
 returns: The y-component of the Double2 at a given second. If that specific second is not found, linear interpolation is applied.
 
@@ -99,21 +102,57 @@ Double2.LerpKeyList(list, 3600); // returns 0.5
 Double2.LerpKeyList(list, 2700); // returns 0.75 since 2700 is halfway between 1800 and 3600
 ```
 
+**convertSimpleKeysToLerpable (static)** - Converts an array of thrust keys into a format that the code library can work with
+
+| Parameter  | Datatype | optional | Description                                                                                 |
+| ---------- | -------- | -------- | ------------------------------------------------------------------------------------------- |
+| simpleKeys | double[] | false    | An array of doubles ranging between 0-1 where their index represents time in the simulation |
+
+returns: A List\<Double2\> whose y component is the thrust at a given time, which is the x component.
+
+**MagnitudeSigfig** - Formats the magnitude and direction of the Double2 into a string that has a specified amount of decimal places
+
+| Parameter | Datatype | optional | Description                                   |
+| --------- | -------- | -------- | --------------------------------------------- |
+| sigfig    | int      | false    | The amount of significant figures to be shown |
+| unit      | string   | false    | The units to be printed                       |
+
+**ToStringSigFig** - Formats the x and y values to a string that has a specified amount of decimal places
+
+| Parameter | Datatype | optional | Description                                   |
+| --------- | -------- | -------- | --------------------------------------------- |
+| sigfig    | int      | false    | The amount of significant figures to be shown |
+
 ## Double (struct)
 
-Contains methods useful for working with doubles
+Contains methods that are useful for working with doubles
 
 ### Methods
 
 **Lerp (static)** - applies linear interpolation between two doubles
 
-| Parameter name | Datatype | optional | Description                                                         |
-| -------------- | -------- | -------- | ------------------------------------------------------------------- |
-| a              | double   | false    | First double                                                        |
-| b              | double   | false    | Second double                                                       |
-| t              | double   | false    | Percentage between 0-1 that represents the distance between a and b |
+| Parameter | Datatype | optional | Description                                                         |
+| --------- | -------- | -------- | ------------------------------------------------------------------- |
+| a         | double   | false    | First double                                                        |
+| b         | double   | false    | Second double                                                       |
+| t         | double   | false    | Percentage between 0-1 that represents the distance between a and b |
 
 returns: double between a and b with linear interpolation applied based on t
+
+**ToSigFigs (static)** - Formats a double to have only one whole number and a specified amount of decimal places
+
+| Parameter   | Datatype | optional | Description                                                          |
+| ----------- | -------- | -------- | -------------------------------------------------------------------- |
+| value       | double   | false    | The double to format                                                 |
+| sigfig      | int      | false    | Number of decimal places to show                                     |
+| shiftAmount | int      | true     | The number of decimal places that the function shifted the double to |
+
+**ToStringSigFig (static)** - Converts a double to a certain number of decimal places, and formats it similar to scientific notation
+
+| Parameter | Datatype | optional | Description                      |
+| --------- | -------- | -------- | -------------------------------- |
+| value     | double   | false    | The double to format             |
+| sigfig    | int      | false    | Number of decimal places to show |
 
 ## SpaceSimulation (static class)
 
@@ -121,9 +160,10 @@ A static class that stores universal constants for use in calculations
 
 ### Properties
 
-| Name       | Datatype | Description                                             |
-| ---------- | -------- | ------------------------------------------------------- |
-| **gconst** | double   | The gravitational constant used for calculating gravity |
+| Name          | Datatype | Description                                             |
+| ------------- | -------- | ------------------------------------------------------- |
+| **gconst**    | double   | The gravitational constant used for calculating gravity |
+| **maxTorque** | double   | theoretical maximum turning force of a rocket           |
 
 ## TrajectoryData (struct)
 
@@ -131,24 +171,31 @@ Holds partial information about a TrajectoryBody's trajectory
 
 ### Constructor Parameters
 
-| Parameter name  | Datatype | optional | Description                                      |
+| Parameter       | Datatype | optional | Description                                      |
 | --------------- | -------- | -------- | ------------------------------------------------ |
+| Mass            | double   | false    | the mass of the body                             |
 | position        | Double2  | false    | the position of the body in absolute coordinates |
 | velocity        | Double2  | false    | the velocity of the body                         |
 | angle           | double   | false    | the angle at which the body is facing at         |
 | angularVelocity | double   | false    | the body's rate of turn                          |
-| Mass            | double   | false    | the mass of the body                             |
 
 ### Properties
 
 | Name            | Datatype | Description                                                             |
 | --------------- | -------- | ----------------------------------------------------------------------- |
-| Force           | Double2  | The horizontal and vertical forces being applied to th e rajectory body |
 | mass            | double   | Readonly: the mass of the body                                          |
 | Pos             | Double2  | the position of the body in absolute coordinates                        |
 | Velocity        | Double2  | the velocity of the body                                                |
+| Force           | Double2  | The horizontal and vertical forces being applied to the trajectory body |
 | Angle           | double   | the angle at which the body is facing at                                |
 | AngularVelocity | double   | the body's rate of turn                                                 |
+| Torque          | double   | The torque that is being applied on the body                            |
+
+### Methods
+
+**GetMass** - returns the mass of the rocket
+
+**PrintToConsole** - prints the properties of the TrajectoryData instance to the console
 
 ## TrajectoryBody (class)
 
@@ -156,35 +203,43 @@ Represents any object in space
 
 ### Constructor Parameters
 
-| Parameter name         | Datatype       | optional | Description                                       |
-| ---------------------- | -------------- | -------- | ------------------------------------------------- |
-| startingTrajectoryData | TrajectoryData | false    | The initial trajectory data of the trajectoryBody |
+| Parameter              | Datatype               | optional | Description                                                      |
+| ---------------------- | ---------------------- | -------- | ---------------------------------------------------------------- |
+| startingTrajectoryData | TrajectoryData         | false    | The initial trajectory data of the trajectoryBody                |
+| Trajectory             | List\<TrajectoryData\> | true     | A precalculated trajectory                                       |
+| interval               | int                    | true     | The time interval between TrajectoryData snapshots. 1 by default |
 
 ### Properties
 
-| Name                      | Datatype               | Description                                                               |
-| ------------------------- | ---------------------- | ------------------------------------------------------------------------- |
-| SnapshotInterval (static) | int                    | The time interval between TrajectoryData snapshots                        |
-| SimulationSecond          | int                    | The time in seconds since the simulation has started                      |
-| TrajectoryList            | List\<TrajectoryData\> | Snapshot of the TrajectoryBody's trajectory based on TrajectoryResolution |
-| CurrentTrajectoryData     | TrajectoryData         | The current trajectory data of the body, used as cache for CalculateNext  |
+| Name                  | Datatype       | Description                                                              |
+| --------------------- | -------------- | ------------------------------------------------------------------------ |
+| name                  | string         | The name of this trajectory body                                         |
+| percentOffset         | double         | The offset that the Trajectory is shifted by along time                  |
+| SimulationSecond      | int            | The time in seconds since the simulation has started                     |
+| CurrentTrajectoryData | TrajectoryData | The current trajectory data of the body, used as cache for CalculateNext |
 
 ### Methods
 
+**InitCalculation** - Resets the trajectoryBody back to a default state
+
+| Parameter              | Datatype       | Optional | Description                                       |
+| ---------------------- | -------------- | -------- | ------------------------------------------------- |
+| startingTrajectoryData | TrajectoryData | false    | The initial trajectory data of the trajectoryBody |
+
 **CalculateNext** - advances the simulation by 1 second and performs collision detection
 
-| Parameter name | Datatype        | Optional | Description                                                         |
-| -------------- | --------------- | -------- | ------------------------------------------------------------------- |
-| otherObjects   | CelestialBody[] | false    | Array of celestialObjects (planets) that will be taken into account |
+| Parameter    | Datatype        | Optional | Description                                                         |
+| ------------ | --------------- | -------- | ------------------------------------------------------------------- |
+| otherObjects | CelestialBody[] | false    | Array of celestialObjects (planets) that will be taken into account |
 
 **GetInterpolatedT** - Determines the lerp percentage and TrajectoryList indexes for a given second in the simulation
 
-| Parameter name | Datatype | Optional | Output | Description                                                                         |
-| -------------- | -------- | -------- | ------ | ----------------------------------------------------------------------------------- |
-| time           | int      | false    | false  | Simulation time in seconds that will be used to calculate indexes                   |
-| index          | int      | false    | true   | The lower TrajectoryList index, before the specified time                           |
-| nextIndex      | int      | false    | true   | The upper TrajectoryList index, after the specified time                            |
-| clamped        | boolean  | true     | false  | If true, allows method to sometimes return first and last index. `false` by default |
+| Parameter | Datatype | Optional | Output | Description                                                                         |
+| --------- | -------- | -------- | ------ | ----------------------------------------------------------------------------------- |
+| time      | int      | false    | false  | Simulation time in seconds that will be used to calculate indexes                   |
+| index     | int      | false    | true   | The lower TrajectoryList index, before the specified time                           |
+| nextIndex | int      | false    | true   | The upper TrajectoryList index, after the specified time                            |
+| clamped   | boolean  | true     | false  | If true, allows method to sometimes return first and last index. `false` by default |
 
 returns: the lerp percentage between index and nextIndex
 
@@ -198,35 +253,35 @@ Double2 b = Trajectorylist[nextIndex].Pos; 					// the position of the rocket 20
 double lerpedPosition = Double2.Lerp(a, b, lerpPercentage); // the position of the rocket 1500 seconds in
 ```
 
-**GetPositionAtTime** - Gets the position of the trajectoryBody at a given second
+**Get\<LerpableDouble2\>AtTime** - Gets the lerped value of the position, velocity, force of the trajectoryBody at a given second
 
-| Parameter name | Datatype | Optional | Description                |
-| -------------- | -------- | -------- | -------------------------- |
-| timeSecond     | int      | false    | Simulation time in seconds |
+| Parameter  | Datatype | Optional | Description                |
+| ---------- | -------- | -------- | -------------------------- |
+| timeSecond | int      | false    | Simulation time in seconds |
 
-returns: Double2 of the trajectoryBody position at the requested time
+returns: Lerped Double2 property of the trajectoryBody at the requested time
 
-**GetVelocityAtTime** - Gets the velocity of the trajectoryBody at a given second
+**Get\<LerpableDouble\>AtTime** - Gets the lerped value of the angle, angularVelocity, Torque of the trajectoryBody at a given second
 
-| Parameter name | Datatype | Optional | Description                |
-| -------------- | -------- | -------- | -------------------------- |
-| timeSecond     | int      | false    | Simulation time in seconds |
+| Parameter  | Datatype | Optional | Description                |
+| ---------- | -------- | -------- | -------------------------- |
+| timeSecond | int      | false    | Simulation time in seconds |
 
-returns: Double2 of the trajectoryBody velocity at the requested time
+returns: Lerped Double property of the trajectoryBody at the requested time
 
 **GetCurrentForces** - Calculates the forces being applied on the TrajectoryBody with planets taken into account
 
 This method is overwritten by classes that derive from TrajectoryBody to add forces specific to them.
 
-| Parameter name | Datatype        | Optional | Description                                                         |
-| -------------- | --------------- | -------- | ------------------------------------------------------------------- |
-| otherObjects   | CelestialBody[] | false    | Array of celestialObjects (planets) that will be taken into account |
+| Parameter    | Datatype        | Optional | Description                                                         |
+| ------------ | --------------- | -------- | ------------------------------------------------------------------- |
+| otherObjects | CelestialBody[] | false    | Array of celestialObjects (planets) that will be taken into account |
 
 returns: Double2 containing the forces being applied in the horizontal and vertical axis
 
 **GetGravity** - Determines the forces of gravity acting on the TrajectoryBody in the horizontal and vertical axis
 
-| Parameter name | Datatype        | Optional | Description                                                         |
+| Parameter      | Datatype        | Optional | Description                                                         |
 | -------------- | --------------- | -------- | ------------------------------------------------------------------- |
 | gravityHolders | CelestialBody[] | false    | Array of celestialObjects (planets) that will be taken into account |
 
@@ -234,12 +289,19 @@ returns: Double2 containing the forces of gravity being applied in the horizonta
 
 **GetRawForceOfGravity** - Calculates the raw force of gravity between the two bodies
 
-| Parameter name | Datatype      | Optional | Description                              |
-| -------------- | ------------- | -------- | ---------------------------------------- |
-| body           | CelestialBody | false    | The planet to compute gravity against    |
-| bodyPos        | Double2       | false    | The position of the body at a given time |
+| Parameter | Datatype      | Optional | Description                              |
+| --------- | ------------- | -------- | ---------------------------------------- |
+| body      | CelestialBody | false    | The planet to compute gravity against    |
+| bodyPos   | Double2       | false    | The position of the body at a given time |
 
 returns: double representing the raw force of gravity between two bodies
+
+**ConvertTorqueToDegPerSecond** - Converts torque in newton-meters to degrees/second
+
+| Parameter | Datatype | Optional | Description                          |
+| --------- | -------- | -------- | ------------------------------------ |
+| torque    | double   | false    | the torque being applied to the body |
+| length    | double   | false    | The length of the body               |
 
 ## ThrustBody (class, extends TrajectoryBody)
 
@@ -247,22 +309,24 @@ Represents a rocket
 
 ### Constructor Parameters
 
-| Parameter name         | Datatype        | optional | Description                                               |
-| ---------------------- | --------------- | -------- | --------------------------------------------------------- |
-| startingTrajectoryData | TrajectoryData  | false    | The initial trajectory data of the thrustBody             |
-| ThrustKeys             | List\<Double2\> | false    | List that represents the rocket's thrust levels over time |
-| RocketLength           | double          | false    | Length of the rocket                                      |
-| ExhaustVelo            | double          | true     | The speed of the rocket's exhaust gases                   |
-| FuelBurnRate           | double          | true     | The rocket's fuel burn rate                               |
+| Parameter              | Datatype               | optional | Description                                                               |
+| ---------------------- | ---------------------- | -------- | ------------------------------------------------------------------------- |
+| startingTrajectoryData | TrajectoryData         | false    | The initial trajectory data of the thrustBody                             |
+| ThrustKeys             | double[]               | false    | double array that represents the rocket's linear thrust levels over time  |
+| AngleKeys              | double[]               | false    | double array that represents the rocket's angular thrust levels over time |
+| RocketLength           | double                 | false    | Length of the rocket                                                      |
+| ExhaustVelo            | double                 | true     | The speed of the rocket's exhaust gases                                   |
+| FuelBurnRate           | double                 | true     | The rocket's fuel burn rate                                               |
+| Trajectory             | List\<TrajectoryData\> | true     | A precalculated trajectory                                                |
+| interval               | int                    | true     | The time interval between TrajectoryData snapshots. 1 by default          |
 
 ### Properties
 
-| Name         | Datatype        | Description                                               |
-| ------------ | --------------- | --------------------------------------------------------- |
-| thrustKeys   | List\<Double2\> | List that represents the rocket's thrust levels over time |
-| rocketLength | double          | Length of the rocket                                      |
-| exhaustVelo  | double          | The speed of the rocket's exhaust gases                   |
-| fuelBurnRate | double          | The rocket's fuel burn rate                               |
+| Name         | Datatype | Description                             |
+| ------------ | -------- | --------------------------------------- |
+| rocketLength | double   | Length of the rocket                    |
+| exhaustVelo  | double   | The speed of the rocket's exhaust gases |
+| fuelBurnRate | double   | The rocket's fuel burn rate             |
 
 ### Methods
 
@@ -270,29 +334,42 @@ Represents a rocket
 
 This method overrides the GetCurrentForces method and adds thrust
 
-| Parameter name | Datatype        | Optional | Description                                                         |
-| -------------- | --------------- | -------- | ------------------------------------------------------------------- |
-| otherObjects   | CelestialBody[] | false    | Array of celestialObjects (planets) that will be taken into account |
+| Parameter    | Datatype        | Optional | Description                                                         |
+| ------------ | --------------- | -------- | ------------------------------------------------------------------- |
+| otherObjects | CelestialBody[] | false    | Array of celestialObjects (planets) that will be taken into account |
 
 returns: Double2 containing the forces being applied in the horizontal and vertical axis
 
-**GetRotationalVelocity** - calculates the rotational velocity of a rocket initiating a turn
-
-| Parameter name | Datatype | Optional | Description                                                                                                                    |
-| -------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| turningEnergy  | double   | false    | The force exerted on the side of a rocket. Negative values represent a right turn while positive values represent a left turn. |
-| timespan       | double   | false    | The time that a turn takes place                                                                                               |
-
-returns: the angular velocity in degrees / second
-
 **GetThrust** - Computes for the thrust of the rocket
 
-| Parameter name | Datatype        | Optional | Description                                                            |
-| -------------- | --------------- | -------- | ---------------------------------------------------------------------- |
-| otherObjects   | CelestialBody[] | false    | Array of planets, used to determine where the rocket is launching from |
-| percentage     | double          | false    | The thrust level of the rocket                                         |
+| Parameter    | Datatype        | Optional | Description                                                            |
+| ------------ | --------------- | -------- | ---------------------------------------------------------------------- |
+| otherObjects | CelestialBody[] | false    | Array of planets, used to determine where the rocket is launching from |
+| percentage   | double          | false    | The thrust level of the rocket                                         |
 
 returns: The change in position of the rocket with its angle taken into account
+
+**GetCurrentTorques** - calculates the torque being applied to the rocket at a given second
+
+| Parameter    | Datatype        | Optional | Description                                                         |
+| ------------ | --------------- | -------- | ------------------------------------------------------------------- |
+| otherObjects | CelestialBody[] | false    | Array of celestialObjects (planets) that will be taken into account |
+
+returns: the torque being applied to the rocket in newton-meters
+
+**GetTorque** - calculates the torque being applied to the rocket
+
+| Parameter  | Datatype | Optional | Description                                        |
+| ---------- | -------- | -------- | -------------------------------------------------- |
+| percentage | double   | false    | The angular thrust being applied in a given second |
+
+returns: the torque being applied to the rocket in newton-meters
+
+**GetLength** - returns the length of the rocket
+
+**GetThrustKeys** - returns the linear thrust keys
+
+**GetAngularthrustKeys** - returns the angular thrust keys
 
 ## CelestialBody (class, extends TrajectoryBody)
 
@@ -300,13 +377,25 @@ Represents a planet
 
 ### Constructor Parameters
 
-| Parameter name         | Datatype       | optional | Description                                      |
-| ---------------------- | -------------- | -------- | ------------------------------------------------ |
-| startingTrajectoryData | TrajectoryData | false    | The initial trajectory data of the celestialBody |
-| radius                 | double         | false    | The radius of the planet                         |
+| Parameter              | Datatype               | optional | Description                                                      |
+| ---------------------- | ---------------------- | -------- | ---------------------------------------------------------------- |
+| startingTrajectoryData | TrajectoryData         | false    | The initial trajectory data of the celestialBody                 |
+| radius                 | double                 | false    | The radius of the planet                                         |
+| Trajectory             | List\<TrajectoryData\> | true     | A precalculated trajectory                                       |
+| interval               | int                    | true     | The time interval between TrajectoryData snapshots. 1 by default |
 
 ### Properties
 
 | Name   | Datatype | Description              |
 | ------ | -------- | ------------------------ |
 | Radius | double   | The radius of the planet |
+
+### Methods
+
+**GetLength** - returns the diamted of the planet
+
+**ChangeRadius** - changes the radius of the planet
+
+| Name      | Datatype | Description                  |
+| --------- | -------- | ---------------------------- |
+| newRadius | double   | The new radius of the planet |

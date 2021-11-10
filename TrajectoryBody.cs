@@ -222,6 +222,11 @@ namespace SpaceSimulation
 
         //Trajectory calculation
         protected int localSecond = 0;
+		public int SimulationSecond{
+			get {
+				return localSecond;
+			}
+		}
 
         /// <summary>
         /// Calculates the next TrajectoryData and appends it to TrajectoryList array
