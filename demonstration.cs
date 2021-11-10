@@ -1,16 +1,14 @@
 using System;
 using SpaceSimulation;
 
-namespace ConsoleApp1
+namespace MyDemonstrationProgram
 {
-    class DemonstrationProgram
+    class Program
     {
-
 #if !(UNITY_EDITOR || UNITY_STANDALONE)
         static void Main(string[] args){
             double[] thrustKeys = { 0, 0, 0, 0, 0 };
             double[] angularThrustKeys = { 0.1, 0.0, -0.2, 0.0, 0.1 };
-            // double[] angleKeys = { -0.20, 0.20, -0.40, 0.40, -0.60, 0.60, -0.80, 0.80, -1, 1 };
 
             Double2 startingPos = new Double2(0, 0); // position of the rocket
             TrajectoryData startingTrajectoryData = new TrajectoryData(10000, startingPos, Double2.Zero, 45, 0);
@@ -26,7 +24,6 @@ namespace ConsoleApp1
 
             for (int currentTime = 0; currentTime < thrustKeys.Length; currentTime++) {
                 Console.WriteLine("Currently on iteration: " + currentTime);
-            	
                 rocket.CalculateNext(planets);
 				rocket.CurrentTrajectoryData.PrintToConsole();
             }
