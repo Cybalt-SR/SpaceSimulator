@@ -153,6 +153,18 @@ namespace SpaceSimulation
         }
 
         /// <summary>
+        /// Get the mass of the rocket at a given second.
+        /// Smoothing / linear interpolation is applied if the given second is between the available TrajectoryData
+        /// </summary>
+        /// <param name="timeSecond">Simulation time in seconds</param>
+        /// <returns>The position of the rocket at a given second.</returns>
+        public double GetMassAtTime(int timeSecond, bool clamped = false)
+        {
+            double t = GetInterpolatedT(timeSecond, out TrajectoryData data, out TrajectoryData nextdata, clamped);
+            return Double.Lerp(data.GetMass(), nextdata.GetMass(), t);
+        }
+
+        /// <summary>
         /// Get the position of the rocket at a given second.
         /// Smoothing / linear interpolation is applied if the given second is between the available TrajectoryData
         /// </summary>
