@@ -15,6 +15,11 @@ namespace SpaceSimulation
 #if UNITY_EDITOR || UNITY_STANDALONE
         [SerializeField]
 #endif
+        protected double angularDrag = 0;
+
+#if UNITY_EDITOR || UNITY_STANDALONE
+        [SerializeField]
+#endif
         private int SnapshotInterval = 1; // set this to 1 if in CMD, 3600 in unity
         public int GetSnapshotInterval() => SnapshotInterval;
 
@@ -35,7 +40,7 @@ namespace SpaceSimulation
         /// Makes a new trajectory body and initiates it
         /// </summary>
         /// <param name="startingTrajectoryData"> The initial trajectory data of the trajectoryBody </param>
-        public TrajectoryBody(TrajectoryData startingTrajectoryData, List<TrajectoryData> Trajectory = null, int interval = 1)
+        public TrajectoryBody(TrajectoryData startingTrajectoryData, List<TrajectoryData> Trajectory = null, double aDrag = 0, int interval = 1)
         {
             SnapshotInterval = interval;
 
@@ -258,6 +263,11 @@ namespace SpaceSimulation
             //rotational physics
             current_t_data.Torque = GetCurrentTorques(otherObjects);
             current_t_data.AngularVelocity += ConvertTorqueToDegPerSec(current_t_data.Torque, GetLength());
+            var reductionDueToDrag = ConvertTorqueToDegPerSec(angularDrag, GetLength());
+            if (Math.Abs(current_t_data.AngularVelocity) > reductionDueToDrag)
+                current_t_data.AngularVelocity -= Math.Sign(current_t_data.AngularVelocity) * reductionDueToDrag;
+            else
+                current_t_data.AngularVelocity /= 2;
 
             CelestialBody planetHit = null; // planet that body has intersected positions with
             Double2 intersection = Double2.Zero; // coordinates relative to the current position to the rocket where an intersection takes place

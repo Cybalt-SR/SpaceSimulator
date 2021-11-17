@@ -24,16 +24,19 @@ namespace SpaceSimulation
         public readonly double rocketLength; // length of the rocket in meters
         public readonly double exhaustVelo; // Saturn V exhaust velocity 2.40 * 10^3 m/s (Make a method for this later?)
         public readonly double fuelBurnRate; // Saturn V Fuel burn rate is 1.40 * 10^4 kg/s (This should be a constant since it doesn't change for the entire flight duration)
+        public readonly double maxTorque; // theoretical max turning force of a rocket is 200000
 
         /// <summary>
         /// Represents a rocket
         /// </summary>
-        /// <param name="tdata"> Starting trajectoryData of the rocket </param>
+        /// <param name="startingTrajectoryData"> Starting trajectoryData of the rocket </param>
         /// <param name="ThrustKeys"> List that contain keys that represent the rocket's thrust levels over time </param>
 		/// <param name="AngleKeys"> List that contain keys that represent the rocket's angular thrust levels over time </param>
         /// <param name="RocketLength"> Length of the rocket </param>
         /// <param name="ExhaustVelo"> Optional: The velocity of the rocket's exhaust gases </param>
         /// <param name="FuelBurnRate"> Optional: The rocket's fuel burn rate</param>
+        /// <param name="maxTorque"> Optional: The max turning force of the rocket </param>
+        /// <param name="angularDrag"> Optional: The angular drag that is continuously being applied to the rocket </param>
 		/// <param name="Trajectory"> Optional: A list of the rocket's trajectoryData </param>
 		public ThrustBody(
             TrajectoryData startingTrajectoryData,
@@ -42,34 +45,42 @@ namespace SpaceSimulation
             double RocketLength,
             double ExhaustVelo = 2400,
             double FuelBurnRate = 14000,
+            double maxTorque = 200000, // theoretical max turning force of a rocket
+            double angularDrag = 0,
             List<TrajectoryData> Trajectory = null,
             int interval = 1
-            ) : base(startingTrajectoryData, Trajectory, interval)
+            ) : base(startingTrajectoryData, Trajectory, angularDrag, interval)
         {
             thrustKeys = ThrustKeys;
             angularthrustKeys = AngleKeys;
             rocketLength = RocketLength;
             exhaustVelo = ExhaustVelo;
             fuelBurnRate = FuelBurnRate;
+            this.maxTorque = maxTorque;
+            this.angularDrag = angularDrag;
         }
 
-		/// <summary>
+        /// <summary>
         /// Represents a rocket
         /// </summary>
-        /// <param name="tdata"> Starting trajectoryData of the rocket </param>
+        /// <param name="startingTrajectoryData"> Starting trajectoryData of the rocket </param>
         /// <param name="ThrustKeys"> List that contain keys that represent the rocket's thrust levels over time </param>
-		/// <param name="AngleKeys"> List that contain keys that represent the rocket's angular thrust levels over time </param>
+        /// <param name="AngleKeys"> List that contain keys that represent the rocket's angular thrust levels over time </param>
         /// <param name="RocketLength"> Length of the rocket </param>
         /// <param name="ExhaustVelo"> Optional: The velocity of the rocket's exhaust gases </param>
         /// <param name="FuelBurnRate"> Optional: The rocket's fuel burn rate</param>
-		/// <param name="Trajectory"> Optional: A list of the rocket's trajectoryData </param>
-		public ThrustBody(
+        /// <param name="maxTorque"> Optional: The max turning force of the rocket </param>
+        /// <param name="angularDrag"> Optional: The angular drag that is continuously being applied to the rocket </param>
+        /// <param name="Trajectory"> Optional: A list of the rocket's trajectoryData </param>
+        public ThrustBody(
             TrajectoryData startingTrajectoryData, 
             double[] ThrustKeys,
             double[] AngleKeys,
             double RocketLength, 
             double ExhaustVelo = 2400, 
             double FuelBurnRate = 14000,
+            double maxTorque = 200000,
+            double angularDrag = 0,
             List<TrajectoryData> Trajectory = null,
             int interval = 1
             ) : base(startingTrajectoryData, Trajectory, interval)
@@ -79,6 +90,8 @@ namespace SpaceSimulation
             rocketLength = RocketLength;
             exhaustVelo = ExhaustVelo;
             fuelBurnRate = FuelBurnRate;
+            this.maxTorque = maxTorque;
+            this.angularDrag = angularDrag;
         }
 
         // current_t_data is an inherited value from TrajectoryBody
@@ -113,7 +126,7 @@ namespace SpaceSimulation
         // in trigonometry clockwise is negative
         double GetTorque(double percentage)
         {
-            double torque = (SpaceSimulation.maxTorque * percentage) * rocketLength / 2; // should be newton-meters
+            double torque = (maxTorque * percentage) * rocketLength / 2; // should be newton-meters
             return torque;
         }
 

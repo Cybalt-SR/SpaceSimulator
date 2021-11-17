@@ -140,6 +140,8 @@ namespace SpaceSimulation
 
             // percentile of requested time between closest available keys
             double normalizedT = (time - preKey.x) / (postKey.x - preKey.x);
+            normalizedT = Math.Max(normalizedT, 0); // clamp to zero
+            normalizedT = Math.Min(normalizedT, 1); // clamp to one
             return Double.Lerp(preKey.y, postKey.y, normalizedT);
         }
 
