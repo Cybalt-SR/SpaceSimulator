@@ -1,15 +1,15 @@
 # Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [Getting Started](#getting-started)
-	- [Creating a C# Application in Visual Studio 2019](#creating-a-c-application-in-visual-studio-2019)
-	- [Importing the Library in your C# Application](#importing-the-library-in-your-c-application)
-- [Working with the Library](#working-with-the-library)
-	- [Creating initial trajectory data](#creating-initial-trajectory-data)
-	- [Creating planets](#creating-planets)
-	- [Creating rockets](#creating-rockets)
-	- [The actual calculation](#the-actual-calculation)
-		- [Combining everything](#combining-everything)
+-   [Table of Contents](#table-of-contents)
+-   [Getting Started](#getting-started)
+    -   [Creating a C# Application in Visual Studio 2019](#creating-a-c-application-in-visual-studio-2019)
+    -   [Importing the Library in your C# Application](#importing-the-library-in-your-c-application)
+-   [Working with the Library](#working-with-the-library)
+    -   [Creating initial trajectory data](#creating-initial-trajectory-data)
+    -   [Creating planets](#creating-planets)
+    -   [Creating rockets](#creating-rockets)
+    -   [The actual calculation](#the-actual-calculation)
+        -   [Combining everything](#combining-everything)
 
 # Getting Started
 
@@ -159,3 +159,11 @@ namespace MyDemonstrationProgram
 	}
 }
 ```
+
+### Running the Program
+
+Now that we've written our first program that utilizes the library, we should test if it runs. Inside Visual Studio, we can compile the program by pressing the button with the name of the project:
+![Compile and Run button](.github/assets/img9.png)
+
+Afterwards, we should see our code compile and run, where the output is displayed in a command prompt window:
+![Output](.github/assets/img8.png)
