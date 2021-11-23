@@ -4,32 +4,32 @@ A classical mechanics code library written in C# for calculating gravity, laws o
 
 Written by Gabriel Rayo and Lance Gulinao of Group GUMARATI from STEM-12C of DLSU-IS Laguna
 
-- [SpaceSimulator](#spacesimulator)
-- [Documentation](#documentation)
-	- [Double2 (struct)](#double2-struct)
-		- [Constructor Parameters](#constructor-parameters)
-		- [Properties](#properties)
-		- [Methods](#methods)
-	- [Double (struct)](#double-struct)
-		- [Methods](#methods-1)
-	- [SpaceSimulation (static class)](#spacesimulation-static-class)
-		- [Properties](#properties-1)
-	- [TrajectoryData (struct)](#trajectorydata-struct)
-		- [Constructor Parameters](#constructor-parameters-1)
-		- [Properties](#properties-2)
-		- [Methods](#methods-2)
-	- [TrajectoryBody (class)](#trajectorybody-class)
-		- [Constructor Parameters](#constructor-parameters-2)
-		- [Properties](#properties-3)
-		- [Methods](#methods-3)
-	- [ThrustBody (class, extends TrajectoryBody)](#thrustbody-class-extends-trajectorybody)
-		- [Constructor Parameters](#constructor-parameters-3)
-		- [Properties](#properties-4)
-		- [Methods](#methods-4)
-	- [CelestialBody (class, extends TrajectoryBody)](#celestialbody-class-extends-trajectorybody)
-		- [Constructor Parameters](#constructor-parameters-4)
-		- [Properties](#properties-5)
-		- [Methods](#methods-5)
+-   [SpaceSimulator](#spacesimulator)
+-   [Documentation](#documentation)
+    -   [Double2 (struct)](#double2-struct)
+        -   [Constructor Parameters](#constructor-parameters)
+        -   [Properties](#properties)
+        -   [Methods](#methods)
+    -   [Double (struct)](#double-struct)
+        -   [Methods](#methods-1)
+    -   [SpaceSimulation (static class)](#spacesimulation-static-class)
+        -   [Properties](#properties-1)
+    -   [TrajectoryData (struct)](#trajectorydata-struct)
+        -   [Constructor Parameters](#constructor-parameters-1)
+        -   [Properties](#properties-2)
+        -   [Methods](#methods-2)
+    -   [TrajectoryBody (class)](#trajectorybody-class)
+        -   [Constructor Parameters](#constructor-parameters-2)
+        -   [Properties](#properties-3)
+        -   [Methods](#methods-3)
+    -   [ThrustBody (class, extends TrajectoryBody)](#thrustbody-class-extends-trajectorybody)
+        -   [Constructor Parameters](#constructor-parameters-3)
+        -   [Properties](#properties-4)
+        -   [Methods](#methods-4)
+    -   [CelestialBody (class, extends TrajectoryBody)](#celestialbody-class-extends-trajectorybody)
+        -   [Constructor Parameters](#constructor-parameters-4)
+        -   [Properties](#properties-5)
+        -   [Methods](#methods-5)
 
 ---
 
@@ -160,10 +160,9 @@ A static class that stores universal constants for use in calculations
 
 ### Properties
 
-| Name          | Datatype | Description                                             |
-| ------------- | -------- | ------------------------------------------------------- |
-| **gconst**    | double   | The gravitational constant used for calculating gravity |
-| **maxTorque** | double   | theoretical maximum turning force of a rocket           |
+| Name       | Datatype | Description                                             |
+| ---------- | -------- | ------------------------------------------------------- |
+| **gconst** | double   | The gravitational constant used for calculating gravity |
 
 ## TrajectoryData (struct)
 
@@ -203,11 +202,12 @@ Represents any object in space
 
 ### Constructor Parameters
 
-| Parameter              | Datatype               | optional | Description                                                      |
-| ---------------------- | ---------------------- | -------- | ---------------------------------------------------------------- |
-| startingTrajectoryData | TrajectoryData         | false    | The initial trajectory data of the trajectoryBody                |
-| Trajectory             | List\<TrajectoryData\> | true     | A precalculated trajectory                                       |
-| interval               | int                    | true     | The time interval between TrajectoryData snapshots. 1 by default |
+| Parameter              | Datatype               | optional | Description                                                                   |
+| ---------------------- | ---------------------- | -------- | ----------------------------------------------------------------------------- |
+| startingTrajectoryData | TrajectoryData         | false    | The initial trajectory data of the trajectoryBody                             |
+| Trajectory             | List\<TrajectoryData\> | true     | A precalculated trajectory                                                    |
+| aDrag                  | double                 | true     | The angular drag that is constantly being applied on the rocket. 1 by default |
+| interval               | int                    | true     | The time interval between TrajectoryData snapshots. 1 by default              |
 
 ### Properties
 
@@ -215,12 +215,14 @@ Represents any object in space
 | --------------------- | -------------- | ------------------------------------------------------------------------ |
 | name                  | string         | The name of this trajectory body                                         |
 | percentOffset         | double         | The offset that the Trajectory is shifted by along time                  |
+| angularDrag           | double         | The angular drag that is constantly being applied on the rocket          |
+| SnapshotInterval      | int            | Time in seconds that dictates the intervals between trajectory snapshots |
 | SimulationSecond      | int            | The time in seconds since the simulation has started                     |
 | CurrentTrajectoryData | TrajectoryData | The current trajectory data of the body, used as cache for CalculateNext |
 
 ### Methods
 
-**InitCalculation** - Resets the trajectoryBody back to a default state
+**InitCalculation** - Resets the trajectoryBody to a default state
 
 | Parameter              | Datatype       | Optional | Description                                       |
 | ---------------------- | -------------- | -------- | ------------------------------------------------- |
@@ -317,16 +319,18 @@ Represents a rocket
 | RocketLength           | double                 | false    | Length of the rocket                                                      |
 | ExhaustVelo            | double                 | true     | The speed of the rocket's exhaust gases                                   |
 | FuelBurnRate           | double                 | true     | The rocket's fuel burn rate                                               |
+| maxTorque              | double                 | true     | The max turning force of the rocket                                       |
+| angularDrag            | double                 | true     | The angular drag that is constantly being applied on the rocket           |
 | Trajectory             | List\<TrajectoryData\> | true     | A precalculated trajectory                                                |
-| interval               | int                    | true     | The time interval between TrajectoryData snapshots. 1 by default          |
 
 ### Properties
 
-| Name         | Datatype | Description                             |
-| ------------ | -------- | --------------------------------------- |
-| rocketLength | double   | Length of the rocket                    |
-| exhaustVelo  | double   | The speed of the rocket's exhaust gases |
-| fuelBurnRate | double   | The rocket's fuel burn rate             |
+| Name         | Datatype | Description                                 |
+| ------------ | -------- | ------------------------------------------- |
+| rocketLength | double   | Length of the rocket                        |
+| exhaustVelo  | double   | The speed of the rocket's exhaust gases     |
+| fuelBurnRate | double   | The rocket's fuel burn rate                 |
+| maxTorque    | double   | Theoretical max turning force of the rocket |
 
 ### Methods
 
