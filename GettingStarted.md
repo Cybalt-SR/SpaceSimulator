@@ -163,6 +163,7 @@ namespace MyDemonstrationProgram
 ### Running the Program
 
 Now that we've written our first program that utilizes the library, we should test if it runs. Inside Visual Studio, we can compile the program by pressing the button with the name of the project:
+
 ![Compile and Run button](.github/assets/img9.png)
 
 Afterwards, we should see our code compile and run, where the output is displayed in a command prompt window:
