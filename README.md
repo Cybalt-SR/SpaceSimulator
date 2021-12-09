@@ -6,18 +6,18 @@ Written by Gabriel Rayo and Lance Gulinao of Group GUMARATI from STEM-12C of DLS
 
 # Table of Contents
 
-- [SpaceSimulator](#spacesimulator)
-- [Table of Contents](#table-of-contents)
-- [Getting Started](#getting-started)
-	- [Creating a C# Application in Visual Studio 2019](#creating-a-c-application-in-visual-studio-2019)
-	- [Importing the Library in your C# Application](#importing-the-library-in-your-c-application)
-- [Working with the Library](#working-with-the-library)
-	- [Creating initial trajectory data](#creating-initial-trajectory-data)
-	- [Creating planets](#creating-planets)
-	- [Creating rockets](#creating-rockets)
-	- [The actual calculation](#the-actual-calculation)
-		- [Combining everything](#combining-everything)
-		- [Running the Program](#running-the-program)
+-   [SpaceSimulator](#spacesimulator)
+-   [Table of Contents](#table-of-contents)
+-   [Getting Started](#getting-started)
+    -   [Creating a C# Application in Visual Studio 2019](#creating-a-c-application-in-visual-studio-2019)
+    -   [Importing the Library in your C# Application](#importing-the-library-in-your-c-application)
+-   [Working with the Library](#working-with-the-library)
+    -   [Creating initial trajectory data](#creating-initial-trajectory-data)
+    -   [Creating planets](#creating-planets)
+    -   [Creating rockets](#creating-rockets)
+    -   [The actual calculation](#the-actual-calculation)
+        -   [Combining everything](#combining-everything)
+        -   [Running the Program](#running-the-program)
 
 # Getting Started
 
@@ -67,7 +67,7 @@ Double2 startingVelocity = new Double2(0, 0);
 TrajectoryData initialTrajectory = new TrajectoryData(
 	mass,					// mass of the object in kg
 	startingPos,			// a Double2 of the object's position
-	startingVelcoity,		// a Double2 of the object's velocity
+	startingVelocity,		// a Double2 of the object's velocity
 	startingAngle,			// angle of the object in degrees
 	startingAngularVelocity	// angle of the object in degrees/second
 );
