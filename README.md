@@ -161,7 +161,7 @@ namespace MyDemonstrationProgram
 			Console.WriteLine("Initial TrajectoryData: ");
 			startingTrajectoryData.PrintToConsole();
 
-			int iterations =60; // the number of seconds to calculate
+			int iterations = 60; // the number of seconds to calculate
 			for (int currentTime = 0; currentTime < iterations; currentTime++) {
 				Console.WriteLine("Currently on iteration: " + currentTime);
 				rocket.CalculateNext(planets);
