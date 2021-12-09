@@ -1,23 +1,23 @@
 # SpaceSimulator
 
-A classical mechanics code library written in C# for calculating gravity, laws of motion, thrust and angular momentum.
+A classical mechanics code library written in C# for calculating gravity, laws of motion, thrust and angular momentum. [**Download link.**](https://github.com/Cybalt-SR/SpaceSimulator/archive/refs/heads/main.zip)
 
-Written by Gabriel Rayo and Lance Gulinao of Group GUMARATI from STEM-12C of DLSU-IS Laguna
+Written by Gabriel Rayo and Lance Gulinao of Group GUMARATI from STEM-12C of DLSU-IS Laguna.
 
 # Table of Contents
 
--   [SpaceSimulator](#spacesimulator)
--   [Table of Contents](#table-of-contents)
--   [Getting Started](#getting-started)
-    -   [Creating a C# Application in Visual Studio 2019](#creating-a-c-application-in-visual-studio-2019)
-    -   [Importing the Library in your C# Application](#importing-the-library-in-your-c-application)
--   [Working with the Library](#working-with-the-library)
-    -   [Creating initial trajectory data](#creating-initial-trajectory-data)
-    -   [Creating planets](#creating-planets)
-    -   [Creating rockets](#creating-rockets)
-    -   [The actual calculation](#the-actual-calculation)
-        -   [Combining everything](#combining-everything)
-        -   [Running the Program](#running-the-program)
+- [SpaceSimulator](#spacesimulator)
+- [Table of Contents](#table-of-contents)
+- [Getting Started](#getting-started)
+	- [Creating a C# Application in Visual Studio 2019](#creating-a-c-application-in-visual-studio-2019)
+	- [Importing the Library in your C# Application](#importing-the-library-in-your-c-application)
+- [Working with the Library](#working-with-the-library)
+	- [Creating initial trajectory data](#creating-initial-trajectory-data)
+	- [Creating planets](#creating-planets)
+	- [Creating rockets](#creating-rockets)
+	- [The actual calculation](#the-actual-calculation)
+		- [Combining everything](#combining-everything)
+		- [Running the Program](#running-the-program)
 
 # Getting Started
 
@@ -25,6 +25,8 @@ Written by Gabriel Rayo and Lance Gulinao of Group GUMARATI from STEM-12C of DLS
 
 To get started with the code library,
 Install Visual Studio 2019 with support for .NET desktop development under the "Desktop & Mobile section".
+
+![Installer Workloads](.github/assets/../assets/img10.png)
 
 After that, follow these steps to add the code library in to your C# application:
 
@@ -119,7 +121,8 @@ ThrustBody rocket = new ThrustBody(
 Once we have created a rocket and the planets that are included in our simulation, we can begin calculating it's trajectory
 
 ```cs
-for(int currentTime = 0; currentTime < thrustKeys.Length; current++){
+int iterations = 60; // the number of seconds to calculate
+for(int currentTime = 0; currentTime < iterations; currentTime++){
 	// print what iteration it is currently calculating for
 	Console.WriteLine("Currently on iteration: " + currentTime);
 
@@ -158,7 +161,8 @@ namespace MyDemonstrationProgram
 			Console.WriteLine("Initial TrajectoryData: ");
 			startingTrajectoryData.PrintToConsole();
 
-			for (int currentTime = 0; currentTime < thrustKeys.Length; currentTime++) {
+			int iterations =60; // the number of seconds to calculate
+			for (int currentTime = 0; currentTime < iterations; currentTime++) {
 				Console.WriteLine("Currently on iteration: " + currentTime);
 				rocket.CalculateNext(planets);
 				rocket.CurrentTrajectoryData.PrintToConsole();
