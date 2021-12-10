@@ -6,18 +6,18 @@ Written by Gabriel Rayo and Lance Gulinao of Group GUMARATI from STEM-12C of DLS
 
 # Table of Contents
 
-- [SpaceSimulator](#spacesimulator)
-- [Table of Contents](#table-of-contents)
-- [Getting Started](#getting-started)
-	- [Creating a C# Application in Visual Studio 2019](#creating-a-c-application-in-visual-studio-2019)
-	- [Importing the Library in your C# Application](#importing-the-library-in-your-c-application)
-- [Working with the Library](#working-with-the-library)
-	- [Creating initial trajectory data](#creating-initial-trajectory-data)
-	- [Creating planets](#creating-planets)
-	- [Creating rockets](#creating-rockets)
-	- [The actual calculation](#the-actual-calculation)
-		- [Combining everything](#combining-everything)
-		- [Running the Program](#running-the-program)
+-   [SpaceSimulator](#spacesimulator)
+-   [Table of Contents](#table-of-contents)
+-   [Getting Started](#getting-started)
+    -   [Creating a C# Application in Visual Studio 2019](#creating-a-c-application-in-visual-studio-2019)
+    -   [Importing the Library in your C# Application](#importing-the-library-in-your-c-application)
+-   [Working with the Library](#working-with-the-library)
+    -   [Creating initial trajectory data](#creating-initial-trajectory-data)
+    -   [Creating planets](#creating-planets)
+    -   [Creating rockets](#creating-rockets)
+    -   [The actual calculation](#the-actual-calculation)
+        -   [Combining everything](#combining-everything)
+        -   [Running the Program](#running-the-program)
 
 # Getting Started
 
@@ -150,7 +150,7 @@ namespace MyDemonstrationProgram
 			double[] thrustKeys = { 0, 0, 0, 0, 0 };
 			double[] angularThrustKeys = { 0.1, 0.0, -0.2, 0.0, 0.1 };
 			Double2 startingPos = new Double2(0, 0); // position of the rocket
-			TrajectoryData startingTrajectoryData = new TrajectoryData(10000, startingPos, Double2.Zero, 45, 0);
+			TrajectoryData startingTrajectoryData = new TrajectoryData(SpaceSimulator.EarthMass, startingPos, Double2.Zero, 45, 0);
 			ThrustBody rocket = new ThrustBody(startingTrajectoryData, thrustKeys, angularThrustKeys, 1, 1000, 1000);
 
 			Double2 planetStartingPos = new Double2(0, -10000); // position of the planet
